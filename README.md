@@ -1,4 +1,4 @@
-# Event Discovery App
+# EVNTLY – Event Discovery App
 Discover events through a map-based interface. The user can view nearby events filtered by categories. In addition, a calendar view also allows browsing upcoming events by date. The platform supports micro-payments for paid events, enabling users to purchase tickets directly within the app. 
 ## Team Members
 Juhan Puusepp - Project Manager
