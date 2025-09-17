@@ -3,7 +3,7 @@ Discover events through a map-based interface. The user can view nearby events f
 ## Team Members
 Juhan Puusepp - Project Manager
 
-Karl Laine - Lead Developer
+Karl Laine - Lead Developer / Builder
 
 Gerda Jäe - Researcher
 
