@@ -3,13 +3,13 @@ Discover events through a map-based interface. The user can view nearby events f
 ## Team Members
 Juhan Puusepp - Project Manager
 
-Karl Laine -
+Karl Laine - Lead Developer
 
 Gerda Jäe - Researcher
 
 Beatrice Hellrand - Editor
 
-Evert Saarnak -
+Evert Saarnak - Presenter
 
 ## Planned Features
 Data & Persistence - storage of events and their data, user profiles etc with Firebase
