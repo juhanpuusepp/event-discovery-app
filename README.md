@@ -5,9 +5,9 @@ Juhan Puusepp - Project Manager
 
 Karl Laine -
 
-Gerda Jäe -
+Gerda Jäe - Researcher
 
-Beatrice Hellrand -
+Beatrice Hellrand - Editor
 
 Evert Saarnak -
 
