@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -16,6 +18,10 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // read the key from local.properties
+        val mapsKey: String = gradleLocalProperties(rootDir, providers).getProperty("MAPS_API_KEY") ?: ""
+        manifestPlaceholders["MAPS_API_KEY"] = mapsKey
     }
 
     buildTypes {
@@ -58,5 +64,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
     implementation("com.google.android.gms:play-services-maps:19.2.0")
     implementation("com.google.maps.android:maps-compose:2.14.0")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
+
 
 }
