@@ -1,0 +1,47 @@
+# Gradle
+.gradle/
+build/
+*/build/
+
+# Local configuration
+local.properties
+gradle.properties
+
+# Log/OS files
+*.log
+.DS_Store
+
+# Android Studio / IntelliJ IDEA
+*.iml
+.idea/
+.idea/caches
+.idea/libraries
+.idea/modules.xml
+.idea/workspace.xml
+.idea/navEditor.xml
+.idea/assetWizardSettings.xml
+misc.xml
+deploymentTargetDropDown.xml
+render.experimental.xml
+
+# Generated files
+captures/
+.externalNativeBuild/
+.cxx/
+gen-external-apklibs/
+output.json
+
+# Android artifacts
+*.apk
+*.ap_
+*.aab
+
+# Keystore files (DO NOT COMMIT)
+*.jks
+*.keystore
+
+# Google Services config (keep private if using Firebase/Maps/etc.)
+google-services.json
+
+# Profiling
+*.hprof
