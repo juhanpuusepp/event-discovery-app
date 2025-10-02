@@ -6,20 +6,26 @@ import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.EventNote
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.core.content.ContextCompat
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.*
 import kotlinx.coroutines.CoroutineScope
-
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.layout.padding
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MapScreen() {
+fun MapScreen(
+    onOpenEvents: () -> Unit   // callback to navigate to Events screen
+) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
@@ -38,6 +44,7 @@ fun MapScreen() {
             }
         }
 
+    // Oon first launch, check and request permission
     LaunchedEffect(Unit) {
         val perm = Manifest.permission.ACCESS_FINE_LOCATION
         val granted = ContextCompat.checkSelfPermission(context, perm) ==
@@ -51,18 +58,33 @@ fun MapScreen() {
         }
     }
 
-    GoogleMap(
-        modifier = Modifier.fillMaxSize(),
-        cameraPositionState = cameraPositionState,
-        properties = MapProperties(isMyLocationEnabled = locationEnabled),
-        uiSettings = MapUiSettings(
-            myLocationButtonEnabled = locationEnabled,
-            zoomControlsEnabled = false
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Map") },
+                actions = {
+                    IconButton(onClick = onOpenEvents) {
+                        Icon(Icons.Filled.EventNote, contentDescription = "Open Events")
+                    }
+                }
+            )
+        }
+    ) { innerPadding ->
+        GoogleMap(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            cameraPositionState = cameraPositionState,
+            properties = MapProperties(isMyLocationEnabled = locationEnabled),
+            uiSettings = MapUiSettings(
+                myLocationButtonEnabled = locationEnabled,
+                zoomControlsEnabled = false
+            )
         )
-    )
+    }
 }
 
-/** Fetches the last known location and animates camera if available. */
+// gets the last known loc and moves the camera to that loc
 @SuppressLint("MissingPermission")
 private fun tryCenterToLastLocation(
     fusedLocationClient: com.google.android.gms.location.FusedLocationProviderClient,
