@@ -23,4 +23,4 @@ Distribution & Monetization - micro-payments to buy tickets for events or upgrad
 User Login and Profiling - user profiles with Firebase Authentication
 
 ## Tools, frameworks, libraries
-Kotlin, Android Studio, Gradle, Jetpack Compose, Firebase, Retrofit, JUnit
+Kotlin, Android Studio, Gradle, Jetpack Compose, Firebase, Retrofit, Google Maps API
