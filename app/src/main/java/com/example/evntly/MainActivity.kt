@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.room.Room
 import com.example.evntly.data.EventDatabase
 import com.example.evntly.ui.navigation.AppNavHost
@@ -27,7 +28,7 @@ class MainActivity : ComponentActivity() {
         val viewModel: EventViewModel by viewModels {
             EventViewModelFactory(repository)
         }
-
+        installSplashScreen()
         setContent {
             AppNavHost(viewModel = viewModel)
         }
