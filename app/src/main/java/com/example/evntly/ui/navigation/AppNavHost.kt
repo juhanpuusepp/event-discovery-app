@@ -9,14 +9,16 @@ import com.example.evntly.ui.screens.map.MapScreen
 import com.example.evntly.ui.screens.events.EventsScreen
 import com.example.evntly.viewmodel.EventViewModel
 
-// navigation graph for the app
+/**
+ * navigation graph for the app
+ */
 @Composable
 fun AppNavHost(modifier: Modifier = Modifier, viewModel: EventViewModel) {
     val nav = rememberNavController()
 
     NavHost(
         navController = nav,
-        startDestination = Destinations.MAP,
+        startDestination = Destinations.MAP, // declare the landing page
         modifier = modifier
     ) {
         composable(Destinations.MAP) {

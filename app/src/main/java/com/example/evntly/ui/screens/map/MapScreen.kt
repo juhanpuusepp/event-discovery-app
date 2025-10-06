@@ -44,7 +44,7 @@ fun MapScreen(
             }
         }
 
-    // Oon first launch, check and request permission
+    // On first launch, check and request permission
     LaunchedEffect(Unit) {
         val perm = Manifest.permission.ACCESS_FINE_LOCATION
         val granted = ContextCompat.checkSelfPermission(context, perm) ==
@@ -58,6 +58,7 @@ fun MapScreen(
         }
     }
 
+    // top bar with button
     Scaffold(
         topBar = {
             TopAppBar(
@@ -84,7 +85,7 @@ fun MapScreen(
     }
 }
 
-// gets the last known loc and moves the camera to that loc
+// gets the last known location and moves the camera to that location
 @SuppressLint("MissingPermission")
 private fun tryCenterToLastLocation(
     fusedLocationClient: com.google.android.gms.location.FusedLocationProviderClient,

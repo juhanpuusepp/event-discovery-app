@@ -26,7 +26,7 @@ fun EventsScreen(onBack: () -> Unit, viewModel: EventViewModel) {
             )
         }
     ) { padding ->
-        // placeholder
+        // show the added events, if none then relevant text
         Box(
             modifier = Modifier
                 .fillMaxSize()
