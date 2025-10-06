@@ -7,10 +7,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.evntly.ui.screens.map.MapScreen
 import com.example.evntly.ui.screens.events.EventsScreen
+import com.example.evntly.viewmodel.EventViewModel
 
 // navigation graph for the app
 @Composable
-fun AppNavHost(modifier: Modifier = Modifier) {
+fun AppNavHost(modifier: Modifier = Modifier, viewModel: EventViewModel) {
     val nav = rememberNavController()
 
     NavHost(
@@ -25,7 +26,8 @@ fun AppNavHost(modifier: Modifier = Modifier) {
         }
         composable(Destinations.EVENTS) {
             EventsScreen(
-                onBack = { nav.popBackStack() }
+                onBack = { nav.popBackStack() },
+                viewModel = viewModel
             )
         }
     }

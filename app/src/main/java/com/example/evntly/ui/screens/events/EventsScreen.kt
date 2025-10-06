@@ -9,10 +9,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
+import com.example.evntly.viewmodel.EventViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EventsScreen(onBack: () -> Unit) {
+fun EventsScreen(onBack: () -> Unit, viewModel: EventViewModel) {
     Scaffold(
         topBar = {
             TopAppBar(
