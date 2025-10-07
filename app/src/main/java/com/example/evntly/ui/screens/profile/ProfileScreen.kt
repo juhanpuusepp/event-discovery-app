@@ -35,7 +35,7 @@ fun ProfileScreen() {
 
             // Profile picture
             Image(
-                painter = painterResource(id = R.drawable.orangewithbgandlogo), // add a placeholder in res/drawable
+                painter = painterResource(id = R.drawable.orangewithbgandlogo),
                 contentDescription = "Profile picture",
                 modifier = Modifier
                     .size(120.dp)
