@@ -14,15 +14,11 @@ import com.example.evntly.ui.viewmodel.EventViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventsScreen(onBack: () -> Unit, viewModel: EventViewModel) {
+    // Show the top bar with the name
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Events") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                }
+                title = { Text("Events") }
             )
         }
     ) { padding ->
