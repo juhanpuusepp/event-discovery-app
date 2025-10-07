@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.evntly.ui.screens.map.MapScreen
 import com.example.evntly.ui.screens.events.EventsScreen
-import com.example.evntly.viewmodel.EventViewModel
+import com.example.evntly.ui.viewmodel.EventViewModel
 
 /**
  * navigation graph for the app

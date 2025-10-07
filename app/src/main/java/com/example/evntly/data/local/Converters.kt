@@ -1,4 +1,4 @@
-package com.example.evntly.data
+package com.example.evntly.data.local
 
 import androidx.room.TypeConverter
 import java.util.Date

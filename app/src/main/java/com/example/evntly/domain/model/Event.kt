@@ -1,4 +1,4 @@
-package com.example.evntly.data
+package com.example.evntly.domain.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

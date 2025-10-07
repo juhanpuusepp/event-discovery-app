@@ -1,7 +1,7 @@
-package com.example.evntly.viewmodel
+package com.example.evntly.data.repository
 
-import com.example.evntly.data.Event
-import com.example.evntly.data.EventDao
+import com.example.evntly.domain.model.Event
+import com.example.evntly.data.local.EventDao
 import kotlinx.coroutines.flow.Flow
 
 class EventRepository(private val eventDao: EventDao) {

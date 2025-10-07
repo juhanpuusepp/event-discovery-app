@@ -1,7 +1,8 @@
-package com.example.evntly.viewmodel
+package com.example.evntly.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.evntly.data.repository.EventRepository
 
 class EventViewModelFactory(private val repository: EventRepository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

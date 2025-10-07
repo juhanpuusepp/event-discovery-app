@@ -1,8 +1,9 @@
-package com.example.evntly.viewmodel
+package com.example.evntly.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.evntly.data.Event
+import com.example.evntly.domain.model.Event
+import com.example.evntly.data.repository.EventRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn

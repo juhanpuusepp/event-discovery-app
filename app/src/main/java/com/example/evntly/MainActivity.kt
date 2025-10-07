@@ -6,11 +6,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.room.Room
-import com.example.evntly.data.EventDatabase
+import com.example.evntly.data.local.EventDatabase
 import com.example.evntly.ui.navigation.AppNavHost
-import com.example.evntly.viewmodel.EventRepository
-import com.example.evntly.viewmodel.EventViewModel
-import com.example.evntly.viewmodel.EventViewModelFactory
+import com.example.evntly.data.repository.EventRepository
+import com.example.evntly.ui.viewmodel.EventViewModel
+import com.example.evntly.ui.viewmodel.EventViewModelFactory
 import kotlin.getValue
 
 class MainActivity : ComponentActivity() {
