@@ -20,11 +20,13 @@ import com.google.maps.android.compose.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.filled.Add
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(
-    onOpenEvents: () -> Unit   // callback to navigate to Events screen
+    onOpenEvents: () -> Unit,   // callback to navigate to Events screen
+    onAddEvent: () -> Unit   // callback to open AddEvent screen
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -69,6 +71,11 @@ fun MapScreen(
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = onAddEvent) {
+                Icon(Icons.Filled.Add, contentDescription = "Add Event")
+            }
         }
     ) { innerPadding ->
         GoogleMap(

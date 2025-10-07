@@ -6,4 +6,5 @@ package com.example.evntly.ui.navigation
 object Destinations {
     const val MAP = "map"
     const val EVENTS = "events"
+    const val ADD_EVENT = "add_event"
 }

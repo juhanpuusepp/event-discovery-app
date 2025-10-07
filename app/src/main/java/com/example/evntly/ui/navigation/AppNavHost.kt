@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.evntly.ui.screens.add.AddEventScreen
 import com.example.evntly.ui.screens.map.MapScreen
 import com.example.evntly.ui.screens.events.EventsScreen
 import com.example.evntly.ui.viewmodel.EventViewModel
@@ -23,11 +24,18 @@ fun AppNavHost(modifier: Modifier = Modifier, viewModel: EventViewModel) {
     ) {
         composable(Destinations.MAP) {
             MapScreen(
-                onOpenEvents = { nav.navigate(Destinations.EVENTS) }
+                onOpenEvents = { nav.navigate(Destinations.EVENTS) },
+                onAddEvent = { nav.navigate(Destinations.ADD_EVENT) }
             )
         }
         composable(Destinations.EVENTS) {
             EventsScreen(
+                onBack = { nav.popBackStack() },
+                viewModel = viewModel
+            )
+        }
+        composable(Destinations.ADD_EVENT) {
+            AddEventScreen(
                 onBack = { nav.popBackStack() },
                 viewModel = viewModel
             )
