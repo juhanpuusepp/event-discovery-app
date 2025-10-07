@@ -15,6 +15,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.evntly.ui.screens.add.AddEventScreen
+import com.example.evntly.ui.screens.map.MapScreen
 import com.example.evntly.ui.screens.events.EventsScreen
 import com.example.evntly.ui.screens.map.MapScreen
 import com.example.evntly.ui.screens.profile.ProfileScreen
@@ -31,6 +33,16 @@ fun AppNavHost(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
+    NavHost(
+        navController = nav,
+        startDestination = Destinations.MAP, // declare the landing page
+        modifier = modifier
+    ) {
+        composable(Destinations.MAP) {
+            MapScreen(
+                onOpenEvents = { nav.navigate(Destinations.EVENTS) },
+                onAddEvent = { nav.navigate(Destinations.ADD_EVENT) }
+            )
     // Get screen width to calculate half width dynamically
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val halfWidth = screenWidth / 2
@@ -117,6 +129,12 @@ fun AppNavHost(
                     }
                 }
             }
+        }
+        composable(Destinations.ADD_EVENT) {
+            AddEventScreen(
+                onBack = { nav.popBackStack() },
+                viewModel = viewModel
+            )
         }
     }
 }
