@@ -1,6 +1,6 @@
-### What data is stored locally  
+# What data is stored locally  
 
 
-### Challenges and solutions  
+# Challenges and solutions  
 **Challenges** - Solving merge conflicts  
 **Solutions** - Paired programming
