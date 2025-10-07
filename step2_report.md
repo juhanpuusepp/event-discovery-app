@@ -1,4 +1,5 @@
 # What data is stored locally  
+Info about events - event name, date, price, description and location
 
 
 # Challenges and solutions  
