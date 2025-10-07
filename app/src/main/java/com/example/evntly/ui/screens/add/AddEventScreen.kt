@@ -93,11 +93,6 @@ fun AddEventScreen(
         topBar = {
             TopAppBar(
                 title = { Text("Add Event") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back to Map")
-                    }
-                }
             )
         }
     ) { innerPadding ->

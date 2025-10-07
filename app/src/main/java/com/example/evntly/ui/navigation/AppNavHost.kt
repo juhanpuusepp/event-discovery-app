@@ -108,7 +108,6 @@ fun AppNavHost(
                 ) {
                     composable(Destinations.MAP) {
                         MapScreen(
-                            onOpenEvents = { navController.navigate(Destinations.EVENTS) },
                             onAddEvent = { navController.navigate(Destinations.ADD_EVENT) }
                         )
                     }

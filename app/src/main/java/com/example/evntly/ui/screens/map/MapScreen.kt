@@ -25,7 +25,6 @@ import androidx.compose.material.icons.filled.Add
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(
-    onOpenEvents: () -> Unit,   // callback to navigate to Events screen
     onAddEvent: () -> Unit   // callback to open AddEvent screen
 ) {
     val context = LocalContext.current
@@ -61,16 +60,6 @@ fun MapScreen(
     }
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Map") },
-                actions = {
-                    IconButton(onClick = onOpenEvents) {
-                        Icon(Icons.Filled.EventNote, contentDescription = "Open Events")
-                    }
-                }
-            )
-        },
         floatingActionButton = {
             FloatingActionButton(onClick = onAddEvent) {
                 Icon(Icons.Filled.Add, contentDescription = "Add Event")
