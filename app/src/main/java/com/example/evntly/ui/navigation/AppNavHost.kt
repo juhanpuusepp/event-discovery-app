@@ -16,13 +16,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.evntly.ui.screens.add.AddEventScreen
-import com.example.evntly.ui.screens.map.MapScreen
 import com.example.evntly.ui.screens.events.EventsScreen
 import com.example.evntly.ui.screens.map.MapScreen
 import com.example.evntly.ui.screens.profile.ProfileScreen
 import com.example.evntly.ui.viewmodel.EventViewModel
 import kotlinx.coroutines.launch
 
+/**
+ * Main navigation host for the application.
+ * Handles navigation between Map, Add Event, Events, and Profile screens.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavHost(
@@ -33,16 +36,6 @@ fun AppNavHost(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    NavHost(
-        navController = nav,
-        startDestination = Destinations.MAP, // declare the landing page
-        modifier = modifier
-    ) {
-        composable(Destinations.MAP) {
-            MapScreen(
-                onOpenEvents = { nav.navigate(Destinations.EVENTS) },
-                onAddEvent = { nav.navigate(Destinations.ADD_EVENT) }
-            )
     // Get screen width to calculate half width dynamically
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val halfWidth = screenWidth / 2
@@ -115,7 +108,8 @@ fun AppNavHost(
                 ) {
                     composable(Destinations.MAP) {
                         MapScreen(
-                            onOpenEvents = { navController.navigate(Destinations.EVENTS) }
+                            onOpenEvents = { navController.navigate(Destinations.EVENTS) },
+                            onAddEvent = { navController.navigate(Destinations.ADD_EVENT) }
                         )
                     }
                     composable(Destinations.EVENTS) {
@@ -124,17 +118,17 @@ fun AppNavHost(
                             viewModel = viewModel
                         )
                     }
-                    composable("profile") {
+                    composable(Destinations.PROFILE) {
                         ProfileScreen()
+                    }
+                    composable(Destinations.ADD_EVENT) {
+                        AddEventScreen(
+                            onBack = { navController.popBackStack() },
+                            viewModel = viewModel
+                        )
                     }
                 }
             }
-        }
-        composable(Destinations.ADD_EVENT) {
-            AddEventScreen(
-                onBack = { nav.popBackStack() },
-                viewModel = viewModel
-            )
         }
     }
 }

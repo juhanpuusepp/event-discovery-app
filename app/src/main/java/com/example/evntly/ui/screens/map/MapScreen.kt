@@ -60,19 +60,37 @@ fun MapScreen(
         }
     }
 
-    // Google map
-    GoogleMap(
-        modifier = Modifier
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Map") },
+                actions = {
+                    IconButton(onClick = onOpenEvents) {
+                        Icon(Icons.Filled.EventNote, contentDescription = "Open Events")
+                    }
+                }
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = onAddEvent) {
+                Icon(Icons.Filled.Add, contentDescription = "Add Event")
+            }
+        }
+    ) { innerPadding ->
+        // Google map
+        GoogleMap(
+            modifier = Modifier
                 .fillMaxSize()
-                .padding(),
-        cameraPositionState = cameraPositionState,
-        properties = MapProperties(isMyLocationEnabled = locationEnabled),
-        uiSettings = MapUiSettings(
-            myLocationButtonEnabled = locationEnabled,
-            zoomControlsEnabled = false
+                .padding(innerPadding),
+            cameraPositionState = cameraPositionState,
+            properties = MapProperties(isMyLocationEnabled = locationEnabled),
+            uiSettings = MapUiSettings(
+                myLocationButtonEnabled = locationEnabled,
+                zoomControlsEnabled = false
             )
         )
     }
+}
 
 
 // gets the last known location and moves the camera to that location

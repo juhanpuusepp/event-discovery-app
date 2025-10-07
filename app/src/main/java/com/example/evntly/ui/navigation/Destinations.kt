@@ -7,4 +7,5 @@ object Destinations {
     const val MAP = "map"
     const val EVENTS = "events"
     const val ADD_EVENT = "add_event"
+    const val PROFILE = "profile"
 }
