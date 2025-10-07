@@ -9,6 +9,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
+/**
+ * Viewmodel - a bridge between View and Model
+ * Lets the UI communicate to the back-end
+ */
 class EventViewModel(private val repository: EventRepository) : ViewModel() {
     val events: StateFlow<List<Event>> = repository.getAllEvents()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())

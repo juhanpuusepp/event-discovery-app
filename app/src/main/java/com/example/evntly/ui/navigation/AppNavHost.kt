@@ -84,7 +84,7 @@ fun AppNavHost(
         Scaffold(
             topBar = {
                 TopAppBar(
-                    title = { Text("Evently") },
+                    title = { Text("") },
                     navigationIcon = {
                         IconButton(onClick = {
                             scope.launch {
