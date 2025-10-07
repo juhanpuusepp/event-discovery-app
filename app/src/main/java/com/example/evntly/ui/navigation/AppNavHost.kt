@@ -42,6 +42,7 @@ fun AppNavHost(
 
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = drawerState.isOpen,
         drawerContent = {
             // Wrap drawer sheet in a Box with half the screen width
             Box(modifier = Modifier.width(halfWidth)) {
