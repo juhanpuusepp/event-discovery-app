@@ -60,37 +60,20 @@ fun MapScreen(
         }
     }
 
-    // top bar with button
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Map") },
-                actions = {
-                    IconButton(onClick = onOpenEvents) {
-                        Icon(Icons.Filled.EventNote, contentDescription = "Open Events")
-                    }
-                }
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = onAddEvent) {
-                Icon(Icons.Filled.Add, contentDescription = "Add Event")
-            }
-        }
-    ) { innerPadding ->
-        GoogleMap(
-            modifier = Modifier
+    // Google map
+    GoogleMap(
+        modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
-            cameraPositionState = cameraPositionState,
-            properties = MapProperties(isMyLocationEnabled = locationEnabled),
-            uiSettings = MapUiSettings(
-                myLocationButtonEnabled = locationEnabled,
-                zoomControlsEnabled = false
+                .padding(),
+        cameraPositionState = cameraPositionState,
+        properties = MapProperties(isMyLocationEnabled = locationEnabled),
+        uiSettings = MapUiSettings(
+            myLocationButtonEnabled = locationEnabled,
+            zoomControlsEnabled = false
             )
         )
     }
-}
+
 
 // gets the last known location and moves the camera to that location
 @SuppressLint("MissingPermission")
