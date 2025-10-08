@@ -5,7 +5,11 @@ import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.EventNote
@@ -21,11 +25,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(
-    onAddEvent: () -> Unit   // callback to open AddEvent screen
+    onAddEvent: () -> Unit
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -36,7 +44,6 @@ fun MapScreen(
     val cameraPositionState = rememberCameraPositionState()
     var locationEnabled by remember { mutableStateOf(false) }
 
-    // Ask for permission
     val permissionLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
             locationEnabled = granted
@@ -45,7 +52,6 @@ fun MapScreen(
             }
         }
 
-    // On first launch, check and request permission
     LaunchedEffect(Unit) {
         val perm = Manifest.permission.ACCESS_FINE_LOCATION
         val granted = ContextCompat.checkSelfPermission(context, perm) ==
@@ -59,18 +65,10 @@ fun MapScreen(
         }
     }
 
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(onClick = onAddEvent) {
-                Icon(Icons.Filled.Add, contentDescription = "Add Event")
-            }
-        }
-    ) { innerPadding ->
-        // Google map
+    // Just the map and FAB, no Scaffold
+    Box(modifier = Modifier.fillMaxSize()) {
         GoogleMap(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+            modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
             properties = MapProperties(isMyLocationEnabled = locationEnabled),
             uiSettings = MapUiSettings(
@@ -78,6 +76,17 @@ fun MapScreen(
                 zoomControlsEnabled = false
             )
         )
+
+        FloatingActionButton(
+            containerColor = Color(0xFFE86450),
+            contentColor = Color.White,
+            onClick = onAddEvent,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            Icon(Icons.Filled.Add, contentDescription = "Add Event")
+        }
     }
 }
 

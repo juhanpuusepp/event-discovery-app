@@ -1,7 +1,9 @@
 package com.example.evntly.ui.navigation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -10,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
@@ -42,16 +45,19 @@ fun AppNavHost(
 
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = drawerState.isOpen,
         drawerContent = {
             // Wrap drawer sheet in a Box with half the screen width
-            Box(modifier = Modifier.width(halfWidth)) {
+            Box(modifier = Modifier
+                .width(halfWidth)
+                ) {
                 ModalDrawerSheet {
                     Text(
                         text = "Menu",
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(16.dp)
                     )
-                    Divider()
+                    HorizontalDivider()
 
                     NavigationDrawerItem(
                         label = { Text("Map") },
@@ -74,7 +80,7 @@ fun AppNavHost(
                         selected = false,
                         onClick = {
                             scope.launch { drawerState.close() }
-                            navController.navigate("profile")
+                            navController.navigate(Destinations.PROFILE)
                         }
                     )
                 }
@@ -82,6 +88,7 @@ fun AppNavHost(
         }
     ) {
         Scaffold(
+            containerColor = Color.Transparent,
             topBar = {
                 TopAppBar(
                     title = { Text("") },
@@ -93,7 +100,12 @@ fun AppNavHost(
                         }) {
                             Icon(Icons.Default.Menu, contentDescription = "Menu")
                         }
-                    }
+                    },
+                    modifier = Modifier.height(LocalConfiguration.current.screenHeightDp.dp * 0.1f),
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color(0xFFE86450),
+                        navigationIconContentColor = Color.White
+                    )
                 )
             }
         ) { innerPadding ->
@@ -108,7 +120,8 @@ fun AppNavHost(
                 ) {
                     composable(Destinations.MAP) {
                         MapScreen(
-                            onAddEvent = { navController.navigate(Destinations.ADD_EVENT) }
+                            onAddEvent = { navController.navigate(Destinations.ADD_EVENT)
+                            }
                         )
                     }
                     composable(Destinations.EVENTS) {
