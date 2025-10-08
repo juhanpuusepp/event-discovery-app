@@ -3,7 +3,8 @@ Info about events - event name, date, price, description and location
 
 
 # Challenges and solutions  
-**Challenges** - Solving merge conflicts  
+Solving merge conflicts ->  **Paired programming**
 
+Very slow emulator -> **Old Android phone for development**
 
-**Solutions** - Paired programming
+Troubles with USB file transfer on MacOS ->  **Installed required software**
