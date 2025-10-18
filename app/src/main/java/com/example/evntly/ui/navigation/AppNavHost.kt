@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,11 +25,14 @@ import com.example.evntly.ui.screens.map.MapScreen
 import com.example.evntly.ui.screens.profile.ProfileScreen
 import com.example.evntly.ui.viewmodel.EventViewModel
 import kotlinx.coroutines.launch
+import com.example.evntly.ui.components.AppTopBar
+import com.example.evntly.ui.components.AppDrawer
 
 /**
  * Main navigation host for the application.
  * Builds a NavController.
- * Calls the drawer (sidebar) that handles navigation between Map, Events, Profile
+ * Calls the TopBar with the menu icon.
+ * Calls the drawer (sidebar) that handles navigation between Map, Events, Profile.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,72 +44,48 @@ fun AppNavHost(
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    // Get screen width to calculate half width dynamically
+    val currentRoute = navController.currentBackStackEntryFlow
+        .collectAsState(initial = navController.currentBackStackEntry)
+        .value?.destination?.route
+
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val halfWidth = screenWidth / 2
 
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = drawerState.isOpen,
+        gesturesEnabled = drawerState.isOpen, // tap to close, swiping disabled
         drawerContent = {
-            // Wrap drawer sheet in a Box with half the screen width
-            Box(modifier = Modifier
-                .width(halfWidth)
-                ) {
-                ModalDrawerSheet {
-                    NavigationDrawerItem(
-                        label = { Text("Map") },
-                        selected = false,
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            navController.navigate(Destinations.MAP)
-                        }
-                    )
-                    NavigationDrawerItem(
-                        label = { Text("Events") },
-                        selected = false,
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            navController.navigate(Destinations.EVENTS)
-                        }
-                    )
-                    NavigationDrawerItem(
-                        label = { Text("Profile") },
-                        selected = false,
-                        onClick = {
-                            scope.launch { drawerState.close() }
-                            navController.navigate(Destinations.PROFILE)
-                        }
-                    )
+            AppDrawer(
+                drawerWidth = halfWidth,
+                currentRoute = currentRoute,
+                onNavigate = { route ->
+                    scope.launch { drawerState.close() }
+                    // avoid building up duplicates on the stack
+                    navController.navigate(route) {
+                        launchSingleTop = true
+                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                        restoreState = true
+                    }
                 }
-            }
+            )
         }
     ) {
         Scaffold(
-            containerColor = Color.Transparent,
             topBar = {
-                TopAppBar(
-                    title = { Text("") },
-                    navigationIcon = {
-                        IconButton(onClick = {
-                            scope.launch {
-                                if (drawerState.isClosed) drawerState.open() else drawerState.close()
-                            }
-                        }) {
-                            Icon(Icons.Default.Menu, contentDescription = "Menu")
+                AppTopBar(
+                    title = "",
+                    onMenuClick = {
+                        scope.launch {
+                            if (drawerState.isClosed) drawerState.open() else drawerState.close()
                         }
-                    },
-                    modifier = Modifier.height(LocalConfiguration.current.screenHeightDp.dp * 0.07f),
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color(0xFFE86450),
-                        navigationIconContentColor = Color.White
-                    )
+                    }
                 )
             }
         ) { innerPadding ->
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
             ) {
                 NavHost(
                     navController = navController,
@@ -114,8 +94,7 @@ fun AppNavHost(
                 ) {
                     composable(Destinations.MAP) {
                         MapScreen(
-                            onAddEvent = { navController.navigate(Destinations.ADD_EVENT)
-                            }
+                            onAddEvent = { navController.navigate(Destinations.ADD_EVENT) }
                         )
                     }
                     composable(Destinations.EVENTS) {
