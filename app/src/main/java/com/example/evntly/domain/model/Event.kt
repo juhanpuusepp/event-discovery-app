@@ -4,6 +4,10 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.Date
 
+/**
+ * Room entity ( domain model)
+ */
+
 @Entity(tableName = "events")
 data class Event(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,

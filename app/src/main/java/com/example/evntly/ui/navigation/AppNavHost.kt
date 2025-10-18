@@ -27,7 +27,8 @@ import kotlinx.coroutines.launch
 
 /**
  * Main navigation host for the application.
- * Handles navigation between Map, Add Event, Events, and Profile screens.
+ * Builds a NavController.
+ * Calls the drawer (sidebar) that handles navigation between Map, Events, Profile
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

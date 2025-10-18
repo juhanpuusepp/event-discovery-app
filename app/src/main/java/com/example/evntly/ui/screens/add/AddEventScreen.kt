@@ -25,6 +25,8 @@ import java.util.*
  * Screen for adding a new event.
  * Allows the user to input event details (name, date + time, price, description, location)
  * and saves the event to the database through the ViewModel.
+ *
+ * On save, constructs an Event.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

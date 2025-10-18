@@ -30,6 +30,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 
+/**
+ * Shows the Google Map via Maps Compose,
+ * requests location permission,
+ * animates the camera to last known location once granted.
+ * Creates a floating button to create an event
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(

@@ -17,6 +17,11 @@ import androidx.compose.runtime.getValue
 import com.example.evntly.domain.model.Event
 import com.example.evntly.ui.viewmodel.EventViewModel
 
+/**
+ * Uses a Flow<List<Event>> exposed by EventViewModel (collected as state)
+ * and renders either an empty state or a LazyColumn of cards.
+ */
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EventsScreen(onBack: () -> Unit, viewModel: EventViewModel) {

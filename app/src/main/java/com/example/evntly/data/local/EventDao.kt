@@ -7,6 +7,10 @@ import androidx.room.Query
 import com.example.evntly.domain.model.Event
 import kotlinx.coroutines.flow.Flow
 
+/**
+ * Using Flow makes the UI reactive.
+ */
+
 @Dao
 interface EventDao {
     @Insert
