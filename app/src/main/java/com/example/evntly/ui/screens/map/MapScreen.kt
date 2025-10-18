@@ -1,6 +1,7 @@
 package com.example.evntly.ui.screens.map
 
 import android.Manifest
+import com.example.evntly.R
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -29,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import com.google.android.gms.maps.model.MapStyleOptions
 
 /**
  * Shows the Google Map via Maps Compose,
@@ -42,6 +44,11 @@ fun MapScreen(
     onAddEvent: () -> Unit
 ) {
     val context = LocalContext.current
+
+    val mapStyle = remember {
+        MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style_lightmode)
+    }
+
     val scope = rememberCoroutineScope()
 
     val fusedLocationClient = remember {
@@ -76,7 +83,10 @@ fun MapScreen(
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
-            properties = MapProperties(isMyLocationEnabled = locationEnabled),
+            properties = MapProperties(
+                mapStyleOptions = mapStyle,
+                isMyLocationEnabled = locationEnabled
+            ),
             uiSettings = MapUiSettings(
                 myLocationButtonEnabled = locationEnabled,
                 zoomControlsEnabled = false
