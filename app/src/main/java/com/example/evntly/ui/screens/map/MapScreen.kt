@@ -65,7 +65,7 @@ fun MapScreen(
         }
     }
 
-    // Just the map and FAB, no Scaffold
+    // Just the map and button, no Scaffold
     Box(modifier = Modifier.fillMaxSize()) {
         GoogleMap(
             modifier = Modifier.fillMaxSize(),

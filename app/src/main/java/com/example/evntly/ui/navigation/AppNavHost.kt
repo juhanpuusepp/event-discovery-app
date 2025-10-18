@@ -52,13 +52,6 @@ fun AppNavHost(
                 .width(halfWidth)
                 ) {
                 ModalDrawerSheet {
-                    Text(
-                        text = "Menu",
-                        style = MaterialTheme.typography.titleMedium,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                    HorizontalDivider()
-
                     NavigationDrawerItem(
                         label = { Text("Map") },
                         selected = false,
@@ -101,7 +94,7 @@ fun AppNavHost(
                             Icon(Icons.Default.Menu, contentDescription = "Menu")
                         }
                     },
-                    modifier = Modifier.height(LocalConfiguration.current.screenHeightDp.dp * 0.1f),
+                    modifier = Modifier.height(LocalConfiguration.current.screenHeightDp.dp * 0.07f),
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = Color(0xFFE86450),
                         navigationIconContentColor = Color.White

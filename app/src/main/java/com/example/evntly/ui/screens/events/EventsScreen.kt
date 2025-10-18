@@ -23,16 +23,6 @@ fun EventsScreen(onBack: () -> Unit, viewModel: EventViewModel) {
     val events by viewModel.events.collectAsState()
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Events") },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                }
-            )
-        }
     ) { padding ->
         if (events.isEmpty()) {
             Box(

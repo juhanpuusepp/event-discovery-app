@@ -17,23 +17,17 @@ import com.example.evntly.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen() {
-    // Top bar with name
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Profile") }
-            )
-        }
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(24.dp)
+                .padding(24.dp, 150.dp, 24.dp)
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // Profile picture
+            // picture
             Image(
                 painter = painterResource(id = R.drawable.orangewithbgandlogo),
                 contentDescription = "Profile picture",
@@ -44,25 +38,25 @@ fun ProfileScreen() {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Name
+            // username
             Text(
-                text = "Jane Doe",
+                text = "Test User",
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold
             )
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // Email
+            // email
             Text(
-                text = "jane.doe@example.com",
+                text = "test.user@mail.com",
                 fontSize = 16.sp,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Buttons
+            // edit and log out buttons
             Button(
                 onClick = { /* TODO: handle edit */ },
                 modifier = Modifier.fillMaxWidth(0.8f)
