@@ -57,8 +57,8 @@ fun AppNavHost(
                     // avoid building up duplicates on the stack
                     navController.navigate(route) {
                         launchSingleTop = true
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
-                        restoreState = true
+                        popUpTo(navController.graph.startDestinationId) { saveState = (route != Destinations.MAP) }
+                        restoreState = (route != Destinations.MAP)
                     }
                 }
             )
@@ -94,7 +94,7 @@ fun AppNavHost(
                     }
                     composable(Destinations.EVENTS) {
                         EventsScreen(
-                            onBack = { navController.popBackStack() },
+                            onBack = { navController.popBackStack(Destinations.MAP, false) },
                             viewModel = viewModel
                         )
                     }
@@ -103,7 +103,7 @@ fun AppNavHost(
                     }
                     composable(Destinations.ADD_EVENT) {
                         AddEventScreen(
-                            onBack = { navController.popBackStack() },
+                            onBack = { navController.popBackStack(Destinations.MAP, false) },
                             viewModel = viewModel
                         )
                     }

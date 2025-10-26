@@ -20,6 +20,11 @@ import com.example.evntly.domain.model.Event
 import com.example.evntly.ui.viewmodel.EventViewModel
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CircularProgressIndicator
+import com.example.evntly.domain.model.PlaceSuggestion
 
 /**
  * Screen for adding a new event.
@@ -34,19 +39,33 @@ fun AddEventScreen(
     onBack: () -> Unit, // callback to return to the previous screen
     viewModel: EventViewModel = viewModel()
 ) {
-
+    // Form fields
     var name by remember { mutableStateOf("") }
     var date by remember { mutableStateOf<Date?>(null) }
     var price by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
+    // Coordinates derived from selected suggestion
+    var selectedLat by remember { mutableStateOf<Double?>(null) }
+    var selectedLon by remember { mutableStateOf<Double?>(null) }
+
+    val placeUi = viewModel.placeUiState.collectAsState().value
+    val hasSelection = selectedLat != null && selectedLon != null
+
+    // Typing in the location box triggers debounced API search
+    fun onLocationChange(text: String) {
+        location = text
+        selectedLat = null
+        selectedLon = null
+        viewModel.searchPlacesDebounced(text)
+    }
 
     val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
-
 
     val calendar = Calendar.getInstance()
     val context = LocalContext.current
 
+    // Date + time picker
     fun showDateTimePicker() {
         val datePicker = DatePickerDialog(
             context,
@@ -150,20 +169,6 @@ fun AddEventScreen(
                 )
             )
 
-            if (!isPriceValid && price.isNotBlank()) {
-                Text(
-                    text = "Price must be a valid number (up to 2 decimals)",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall
-                )
-            } else if (!isPricePositive && price.isNotBlank()) {
-                Text(
-                    text = "Price cannot be negative",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
-
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
@@ -174,12 +179,56 @@ fun AddEventScreen(
 
             OutlinedTextField(
                 value = location,
-                onValueChange = { location = it },
+                onValueChange = { onLocationChange(it) },
                 label = { Text("Location") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
 
+            // Loading indicator
+            if (placeUi.isLoading) {
+                Row(modifier = Modifier.padding(top = 6.dp)) {
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Searching places...")
+                }
+            }
+
+            // Error/No results
+            if (!placeUi.isLoading
+                && !hasSelection
+                && (placeUi.error != null || (location.length >= 3 && placeUi.suggestions.isEmpty()))
+            ) {
+                val msg = placeUi.error ?: "No results"
+                Text(
+                    text = msg,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(top = 6.dp)
+                )
+            }
+
+            // Suggestions list
+            if (placeUi.suggestions.isNotEmpty()) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(320.dp)
+                        .padding(top = 6.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    items(placeUi.suggestions) { s: PlaceSuggestion ->
+                        SuggestionRow(s) {
+                            location = listOfNotNull(s.title, s.subtitle).joinToString(", ")
+                            selectedLat = s.latitude
+                            selectedLon = s.longitude
+                            viewModel.clearPlaceSuggestions()
+                        }
+                    }
+                }
+            }
+
+            // Save Event button
             Button(
                 onClick = {
                     viewModel.addEvent(
@@ -189,16 +238,36 @@ fun AddEventScreen(
                             price = price.toDouble(),
                             description = description,
                             location = location,
-                            latitude = null,
-                            longitude = null
+                            latitude = selectedLat,
+                            longitude = selectedLon
                         )
                     )
                     onBack()
                 },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = isFormValid
+                enabled = isFormValid && selectedLat != null && selectedLon != null // ensure map accuracy
             ) {
                 Text("Save Event")
+            }
+        }
+    }
+}
+
+/**
+ * One suggestion row (card) in the autocomplete list
+ */
+@Composable
+private fun SuggestionRow(s: PlaceSuggestion, onSelect: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onSelect() },
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+    ) {
+        Column(Modifier.padding(12.dp)) {
+            Text(s.title, style = MaterialTheme.typography.titleSmall)
+            if (s.subtitle != null) {
+                Text(s.subtitle, style = MaterialTheme.typography.bodySmall)
             }
         }
     }

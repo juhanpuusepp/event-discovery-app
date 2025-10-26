@@ -77,4 +77,11 @@ dependencies {
     implementation("androidx.room:room-ktx:$room_version")
 
     implementation("androidx.core:core-splashscreen:1.0.1")
+
+    // Retrofit + Moshi
+    implementation("com.squareup.retrofit2:retrofit:2.11.0")
+    implementation("com.squareup.retrofit2:converter-moshi:2.11.0")
+    implementation("com.squareup.moshi:moshi-kotlin:1.15.1")
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 }
