@@ -34,5 +34,7 @@ User Login and Profiling - user profiles with Firebase Authentication
 ## Current Tools, frameworks, libraries, APIs
 Room, Google Maps API
 
+Map style: The X-Spot location map by Ruben (https://snazzymaps.com/style/287702/the-x-spot-location-map)
+
 ## Planned Tools, frameworks, libraries, APIs
 Dagger, Retrofit, Firebase
