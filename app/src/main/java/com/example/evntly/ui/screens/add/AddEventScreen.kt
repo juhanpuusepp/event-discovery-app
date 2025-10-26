@@ -188,7 +188,9 @@ fun AddEventScreen(
                             date = date!!,
                             price = price.toDouble(),
                             description = description,
-                            location = location
+                            location = location,
+                            latitude = null,
+                            longitude = null
                         )
                     )
                     onBack()

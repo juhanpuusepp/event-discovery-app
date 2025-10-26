@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 import java.util.Date
 
 /**
- * Room entity ( domain model)
+ * Room entity (domain model)
  */
 
 @Entity(tableName = "events")
@@ -15,5 +15,7 @@ data class Event(
     val date: Date,
     val price: Double,
     val description: String,
-    val location: String
+    val location: String,
+    val latitude: Double?,
+    val longitude: Double?
 )

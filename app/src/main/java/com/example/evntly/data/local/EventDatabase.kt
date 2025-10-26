@@ -9,7 +9,7 @@ import com.example.evntly.domain.model.Event
  * Declares the Room DB with the Event entity and registers converters.
  */
 
-@Database(entities = [Event::class], version = 1)
+@Database(entities = [Event::class], version = 2)
 @TypeConverters(Converters::class)
 abstract class EventDatabase : RoomDatabase() {
     abstract fun getEventDao(): EventDao

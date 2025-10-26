@@ -7,13 +7,9 @@ import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.EventNote
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -28,8 +24,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
+import com.example.evntly.ui.viewmodel.EventViewModel
 import com.google.android.gms.maps.model.MapStyleOptions
 
 /**
@@ -41,8 +37,10 @@ import com.google.android.gms.maps.model.MapStyleOptions
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MapScreen(
-    onAddEvent: () -> Unit
+    onAddEvent: () -> Unit,
+    viewModel: EventViewModel
 ) {
+    val events by viewModel.events.collectAsState()
     val context = LocalContext.current
 
     val mapStyle = remember {
@@ -91,7 +89,16 @@ fun MapScreen(
                 myLocationButtonEnabled = locationEnabled,
                 zoomControlsEnabled = false
             )
-        )
+        ) {
+            // draw a marker for each event that has coordinates
+            events.filter { it.latitude != null && it.longitude != null }.forEach { event ->
+                Marker(
+                    state = MarkerState(position = LatLng(event.latitude!!, event.longitude!!)),
+                    title = event.name,
+                    snippet = event.location
+                )
+            }
+        }
 
         FloatingActionButton(
             containerColor = Color(0xFFE86450),
