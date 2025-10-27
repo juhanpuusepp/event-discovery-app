@@ -2,7 +2,10 @@ package com.example.evntly.ui.screens.add
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
@@ -17,14 +20,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.evntly.domain.model.Event
+import com.example.evntly.domain.model.PlaceSuggestion
 import com.example.evntly.ui.viewmodel.EventViewModel
 import java.text.SimpleDateFormat
 import java.util.*
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.CircularProgressIndicator
-import com.example.evntly.domain.model.PlaceSuggestion
 
 /**
  * Screen for adding a new event.
@@ -123,7 +122,7 @@ fun AddEventScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-
+            // Event name
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
@@ -140,18 +139,23 @@ fun AddEventScreen(
                 singleLine = true,
                 enabled = false,
                 colors = OutlinedTextFieldDefaults.colors(
-                    disabledTextColor = LocalContentColor.current.copy(alpha = LocalContentColor.current.alpha),
-                    disabledLabelColor = LocalContentColor.current.copy(alpha = LocalContentColor.current.alpha),
+                    disabledTextColor = LocalContentColor.current,
+                    disabledLabelColor = LocalContentColor.current,
                     disabledBorderColor = MaterialTheme.colorScheme.outline,
-                    disabledPlaceholderColor = LocalContentColor.current.copy(alpha = LocalContentColor.current.alpha)
+                    disabledPlaceholderColor = LocalContentColor.current
                 ),
                 trailingIcon = {
                     IconButton(onClick = { showDateTimePicker() }) {
-                        Icon(Icons.Default.DateRange, contentDescription = "Pick Date and Time")
+                        Icon(
+                            Icons.Default.DateRange,
+                            contentDescription = "Pick Date and Time",
+                            tint = MaterialTheme.colorScheme.primary
+                        )
                     }
                 }
             )
 
+            // Price
             OutlinedTextField(
                 value = price,
                 onValueChange = { newValue ->
@@ -162,13 +166,10 @@ fun AddEventScreen(
                 label = { Text("Price (€)") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                colors = OutlinedTextFieldDefaults.colors(
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                )
+                singleLine = true
             )
 
+            // Description
             OutlinedTextField(
                 value = description,
                 onValueChange = { description = it },
@@ -177,6 +178,7 @@ fun AddEventScreen(
                 maxLines = 3
             )
 
+            // Location
             OutlinedTextField(
                 value = location,
                 onValueChange = { onLocationChange(it) },
@@ -245,7 +247,7 @@ fun AddEventScreen(
                     onBack()
                 },
                 modifier = Modifier.fillMaxWidth(),
-                enabled = isFormValid && selectedLat != null && selectedLon != null // ensure map accuracy
+                enabled = isFormValid && hasSelection
             ) {
                 Text("Save Event")
             }
@@ -266,8 +268,8 @@ private fun SuggestionRow(s: PlaceSuggestion, onSelect: () -> Unit) {
     ) {
         Column(Modifier.padding(12.dp)) {
             Text(s.title, style = MaterialTheme.typography.titleSmall)
-            if (s.subtitle != null) {
-                Text(s.subtitle, style = MaterialTheme.typography.bodySmall)
+            s.subtitle?.let {
+                Text(it, style = MaterialTheme.typography.bodySmall)
             }
         }
     }

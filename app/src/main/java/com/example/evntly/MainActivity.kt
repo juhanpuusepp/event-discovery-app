@@ -11,6 +11,7 @@ import com.example.evntly.data.local.EventDatabase
 import com.example.evntly.ui.navigation.AppNavHost
 import com.example.evntly.data.repository.EventRepository
 import com.example.evntly.domain.model.Event
+import com.example.evntly.ui.theme.EvntlyTheme
 import com.example.evntly.ui.viewmodel.EventViewModel
 import com.example.evntly.ui.viewmodel.EventViewModelFactory
 import kotlinx.coroutines.launch
@@ -49,7 +50,9 @@ class MainActivity : ComponentActivity() {
 
         installSplashScreen()
         setContent {
-            AppNavHost(viewModel = viewModel)
+            EvntlyTheme {
+                AppNavHost(viewModel = viewModel)
+            }
         }
     }
 }
