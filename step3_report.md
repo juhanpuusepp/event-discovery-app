@@ -7,7 +7,25 @@ Why we chose this:
 - It returns coordinates (lat/lon) for places/addresses so we can pin events on the map  
 
 # Example API endpoint used
+**Code example**
+```kotlin
+interface NominatimService {
+    @GET("search")
+    suspend fun search(
+        @Query("q") query: String,
+        @Query("format") format: String = "json",
+        @Query("addressdetails") addressDetails: Int = 1,
+        @Query("limit") limit: Int = 10,
+        // Bias results to Estonia and Estonian labels for better relevance
+        @Query("countrycodes") countryCodes: String = "ee",
+        @Query("accept-language") lang: String = "et",
+        @Query("viewbox") viewbox: String? = null,
+        @Query("bounded") bounded: Int? = null
+    ): List<NominatimPlaceDto>
+}
+```
 
+**HTTP example**
 ```
 https://nominatim.openstreetmap.org/search
   ?q=Genialistide%20Klubi
