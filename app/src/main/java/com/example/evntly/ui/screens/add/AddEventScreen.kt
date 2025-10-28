@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
@@ -116,83 +117,100 @@ fun AddEventScreen(
             )
         }
     ) { innerPadding ->
-        Column(
+        val listState = rememberLazyListState()
+
+        LazyColumn(
+            state = listState,
             modifier = Modifier
-                .padding(innerPadding)
+                .fillMaxSize()
+                .imePadding()
                 .padding(16.dp),
+            contentPadding = innerPadding,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // Event name
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                label = { Text("Event Name") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
+            item {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Event Name") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+            }
 
-            OutlinedTextField(
-                value = date?.let { dateFormat.format(it) } ?: "",
-                onValueChange = {},
-                label = { Text("Date & Time") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                enabled = false,
-                colors = OutlinedTextFieldDefaults.colors(
-                    disabledTextColor = LocalContentColor.current,
-                    disabledLabelColor = LocalContentColor.current,
-                    disabledBorderColor = MaterialTheme.colorScheme.outline,
-                    disabledPlaceholderColor = LocalContentColor.current
-                ),
-                trailingIcon = {
-                    IconButton(onClick = { showDateTimePicker() }) {
-                        Icon(
-                            Icons.Default.DateRange,
-                            contentDescription = "Pick Date and Time",
-                            tint = MaterialTheme.colorScheme.primary
-                        )
+            // Date & time
+            item {
+                OutlinedTextField(
+                    value = date?.let { dateFormat.format(it) } ?: "",
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Date & Time") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showDateTimePicker() },
+                    singleLine = true,
+                    trailingIcon = {
+                        IconButton(onClick = { showDateTimePicker() }) {
+                            Icon(
+                                Icons.Default.DateRange,
+                                contentDescription = "Pick Date and Time",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
-                }
-            )
+                )
+            }
 
             // Price
-            OutlinedTextField(
-                value = price,
-                onValueChange = { newValue ->
-                    if (newValue.isEmpty() || newValue.matches(Regex("^\\d{0,8}(\\.\\d{0,2})?$"))) {
-                        price = newValue
-                    }
-                },
-                label = { Text("Price (€)") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
+            item {
+                OutlinedTextField(
+                    value = price,
+                    onValueChange = { newValue ->
+                        if (newValue.isEmpty() || newValue.matches(Regex("^\\d{0,8}(\\.\\d{0,2})?$"))) {
+                            price = newValue
+                        }
+                    },
+                    label = { Text("Price (€)") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+            }
 
             // Description
-            OutlinedTextField(
-                value = description,
-                onValueChange = { description = it },
-                label = { Text("Description") },
-                modifier = Modifier.fillMaxWidth(),
-                maxLines = 3
-            )
+            item {
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    label = { Text("Description") },
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 3
+                )
+            }
 
             // Location
-            OutlinedTextField(
-                value = location,
-                onValueChange = { onLocationChange(it) },
-                label = { Text("Location") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
+            item {
+                OutlinedTextField(
+                    value = location,
+                    onValueChange = { onLocationChange(it) },
+                    label = { Text("Location") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
+                )
+            }
 
             // Loading indicator
             if (placeUi.isLoading) {
-                Row(modifier = Modifier.padding(top = 6.dp)) {
-                    CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-                    Spacer(Modifier.width(8.dp))
-                    Text("Searching places...")
+                item {
+                    Row(modifier = Modifier.padding(top = 6.dp)) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            strokeWidth = 2.dp
+                        )
+                        Spacer(Modifier.width(8.dp))
+                        Text("Searching places...")
+                    }
                 }
             }
 
@@ -201,56 +219,54 @@ fun AddEventScreen(
                 && !hasSelection
                 && (placeUi.error != null || (location.length >= 3 && placeUi.suggestions.isEmpty()))
             ) {
-                val msg = placeUi.error ?: "No results"
-                Text(
-                    text = msg,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(top = 6.dp)
-                )
+                item {
+                    Text(
+                        text = placeUi.error ?: "No results",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 6.dp)
+                    )
+                }
             }
 
             // Suggestions list
             if (placeUi.suggestions.isNotEmpty()) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(320.dp)
-                        .padding(top = 6.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    items(placeUi.suggestions) { s: PlaceSuggestion ->
-                        SuggestionRow(s) {
-                            location = listOfNotNull(s.title, s.subtitle).joinToString(", ")
-                            selectedLat = s.latitude
-                            selectedLon = s.longitude
-                            viewModel.clearPlaceSuggestions()
-                        }
+                items(placeUi.suggestions) { s: PlaceSuggestion ->
+                    SuggestionRow(s) {
+                        location = listOfNotNull(s.title, s.subtitle).joinToString(", ")
+                        selectedLat = s.latitude
+                        selectedLon = s.longitude
+                        viewModel.clearPlaceSuggestions()
                     }
                 }
             }
 
             // Save Event button
-            Button(
-                onClick = {
-                    viewModel.addEvent(
-                        Event(
-                            name = name,
-                            date = date!!,
-                            price = price.toDouble(),
-                            description = description,
-                            location = location,
-                            latitude = selectedLat,
-                            longitude = selectedLon
+            item {
+                Button(
+                    onClick = {
+                        viewModel.addEvent(
+                            Event(
+                                name = name,
+                                date = date!!,
+                                price = price.toDouble(),
+                                description = description,
+                                location = location,
+                                latitude = selectedLat,
+                                longitude = selectedLon
+                            )
                         )
-                    )
-                    onBack()
-                },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = isFormValid && hasSelection
-            ) {
-                Text("Save Event")
+                        onBack()
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = isFormValid && hasSelection
+                ) {
+                    Text("Save Event")
+                }
             }
+
+            // Spacer at the bottom so the button has room above the keyboard
+            item { Spacer(Modifier.height(8.dp)) }
         }
     }
 }
