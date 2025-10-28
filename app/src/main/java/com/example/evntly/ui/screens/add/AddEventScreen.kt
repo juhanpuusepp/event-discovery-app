@@ -123,7 +123,7 @@ fun AddEventScreen(
             state = listState,
             modifier = Modifier
                 .fillMaxSize()
-                .imePadding()
+                //.imePadding()
                 .padding(16.dp),
             contentPadding = innerPadding,
             verticalArrangement = Arrangement.spacedBy(12.dp)
