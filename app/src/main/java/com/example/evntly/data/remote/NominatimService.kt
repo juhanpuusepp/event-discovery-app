@@ -18,6 +18,6 @@ interface NominatimService {
         @Query("countrycodes") countryCodes: String = "ee",
         @Query("accept-language") lang: String = "et",
         @Query("viewbox") viewbox: String? = null,
-        @Query("bounded") bounded: Int? = null // If 1, restrict to viewbox; if null, only bias
+        @Query("bounded") bounded: Int? = null
     ): List<NominatimPlaceDto>
 }
