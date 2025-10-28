@@ -1,8 +1,26 @@
 # Which API was chosen and why
-Nominatim (OpenStreetMap) Search API for place/address autocomplete and geocoding (returns lat/lon)  
-Why - free, no API key, good coverage in Estonia, can bias results by country/language and even by a bounding box. Perfect fit for our Add Event flow where users type an address and we need coordinates for map markers.
+We integrated the Nominatim (OpenStreetMap) Search API for place/address autocomplete and geocoding (returns lat/lon).  
+
+Why we chose this:
+- It's public and no API key
+- It supports country/language biasing and map-bounded searches, so we can focus on Estonia
+- It returns coordinates (lat/lon) for places/addresses so we can pin events on the map
 
 # Example API endpoint used
 
+```
+https://nominatim.openstreetmap.org/search
+  ?q=Genialistide%20Klubi
+  &format=json
+  &addressdetails=1
+  &limit=10
+  &countrycodes=ee
+  &accept-language=et
+  &viewbox=21.5,59.8,28.2,57.3
+  &bounded=1
+```
+
+- `countrycodes=ee` and `accept-language=et` bias toward Estonia and Estonian labels
+- `viewbox` and `bounded=1` restrict results to an Estonia bounding box for relevance and performance
 
 # Error handling strategy
