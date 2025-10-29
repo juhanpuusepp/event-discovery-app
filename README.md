@@ -25,16 +25,16 @@ Data & Persistence - storage of events and their data, user profiles etc with Fi
 
 UI & Navigation - a map interface, muti-touch actions, animations
 
-API Integration - location-based services to pinpoint the users location and to generate a map
+API Integration - location-based services to pinpoint the users location and to generate a map, API to autocomplete addresses
 
 Distribution & Monetization - micro-payments to buy tickets for events or upgrade your account
 
 User Login and Profiling - user profiles with Firebase Authentication
 
 ## Current Tools, frameworks, libraries, APIs
-Room, Google Maps API
+Room, Retrofit, Google Maps API, Nominatim API
 
 Map style: The X-Spot location map by Ruben (https://snazzymaps.com/style/287702/the-x-spot-location-map)
 
 ## Planned Tools, frameworks, libraries, APIs
-Dagger, Retrofit, Firebase
+Dagger, Firebase
