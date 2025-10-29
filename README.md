@@ -32,7 +32,7 @@ Distribution & Monetization - micro-payments to buy tickets for events or upgrad
 User Login and Profiling - user profiles with Firebase Authentication
 
 ## Current Tools, frameworks, libraries, APIs
-Room, Retrofit, Google Maps API, Nominatim API
+Room, Retrofit + Moshi, Google Maps API, Nominatim API
 
 Map style: The X-Spot location map by Ruben (https://snazzymaps.com/style/287702/the-x-spot-location-map)
 
