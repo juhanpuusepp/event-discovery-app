@@ -38,13 +38,17 @@ import com.google.android.gms.maps.model.MapStyleOptions
 @Composable
 fun MapScreen(
     onAddEvent: () -> Unit,
-    viewModel: EventViewModel
+    viewModel: EventViewModel,
+    isDarkMap: Boolean
 ) {
     val events by viewModel.events.collectAsState()
     val context = LocalContext.current
 
-    val mapStyle = remember {
-        MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style_lightmode)
+    val mapStyle = remember(isDarkMap) {
+        if (isDarkMap)
+            MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style_darkmode)
+        else
+            MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style_lightmode)
     }
 
     val scope = rememberCoroutineScope()

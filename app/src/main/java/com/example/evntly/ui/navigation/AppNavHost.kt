@@ -6,7 +6,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
@@ -37,6 +41,7 @@ fun AppNavHost(
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val isDarkMap = remember { mutableStateOf(false) }
 
     val currentRoute = navController.currentBackStackEntryFlow
         .collectAsState(initial = navController.currentBackStackEntry)
@@ -60,8 +65,12 @@ fun AppNavHost(
                         popUpTo(navController.graph.startDestinationId) { saveState = (route != Destinations.MAP) }
                         restoreState = (route != Destinations.MAP)
                     }
-                }
-            )
+                },
+                onToggleDarkMap = {
+                    isDarkMap.value = !isDarkMap.value
+                },
+                isDarkMap = isDarkMap.value
+                )
         }
     ) {
         Scaffold(
@@ -89,7 +98,8 @@ fun AppNavHost(
                     composable(Destinations.MAP) {
                         MapScreen(
                             onAddEvent = { navController.navigate(Destinations.ADD_EVENT) },
-                            viewModel = viewModel
+                            viewModel = viewModel,
+                            isDarkMap = isDarkMap.value
                         )
                     }
                     composable(Destinations.EVENTS) {
