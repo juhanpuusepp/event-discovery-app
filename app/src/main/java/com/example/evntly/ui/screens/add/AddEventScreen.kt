@@ -10,16 +10,18 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.evntly.R
 import com.example.evntly.domain.model.Event
 import com.example.evntly.domain.model.PlaceSuggestion
 import com.example.evntly.ui.viewmodel.EventViewModel
@@ -61,7 +63,6 @@ fun AddEventScreen(
     }
 
     val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
-
     val calendar = Calendar.getInstance()
     val context = LocalContext.current
 
@@ -90,8 +91,7 @@ fun AddEventScreen(
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
         )
-
-        datePicker.datePicker.minDate = System.currentTimeMillis() + 24 * 60 * 60 * 1000
+        datePicker.datePicker.minDate = System.currentTimeMillis() + 24L * 60 * 60 * 1000
         datePicker.show()
     }
 
@@ -102,7 +102,6 @@ fun AddEventScreen(
     }
 
     val isPricePositive = price.toDoubleOrNull()?.let { it >= 0 } ?: false
-
     val isFormValid = name.isNotBlank() &&
             date != null &&
             isPriceValid &&
@@ -112,28 +111,28 @@ fun AddEventScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Add Event") },
-            )
+            TopAppBar(title = { Text(stringResource(R.string.add_event_title)) })
         }
     ) { innerPadding ->
         val listState = rememberLazyListState()
+        val screenPad = dimensionResource(R.dimen.spacing_md)
+        val itemGap = dimensionResource(R.dimen.spacing_sm)
 
         LazyColumn(
             state = listState,
             modifier = Modifier
                 .fillMaxSize()
-                //.imePadding()
-                .padding(16.dp),
+                .imePadding()
+                .padding(screenPad),
             contentPadding = innerPadding,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(itemGap)
         ) {
             // Event name
             item {
                 OutlinedTextField(
                     value = name,
                     onValueChange = { name = it },
-                    label = { Text("Event Name") },
+                    label = { Text(stringResource(R.string.event_name_label)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
@@ -145,7 +144,7 @@ fun AddEventScreen(
                     value = date?.let { dateFormat.format(it) } ?: "",
                     onValueChange = {},
                     readOnly = true,
-                    label = { Text("Date & Time") },
+                    label = { Text(stringResource(R.string.date_time_label)) },
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable { showDateTimePicker() },
@@ -154,7 +153,7 @@ fun AddEventScreen(
                         IconButton(onClick = { showDateTimePicker() }) {
                             Icon(
                                 Icons.Default.DateRange,
-                                contentDescription = "Pick Date and Time",
+                                contentDescription = stringResource(R.string.pick_date_time),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -171,7 +170,7 @@ fun AddEventScreen(
                             price = newValue
                         }
                     },
-                    label = { Text("Price (€)") },
+                    label = { Text(stringResource(R.string.price_label)) },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
@@ -183,7 +182,7 @@ fun AddEventScreen(
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
-                    label = { Text("Description") },
+                    label = { Text(stringResource(R.string.description_label)) },
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 3
                 )
@@ -194,7 +193,7 @@ fun AddEventScreen(
                 OutlinedTextField(
                     value = location,
                     onValueChange = { onLocationChange(it) },
-                    label = { Text("Location") },
+                    label = { Text(stringResource(R.string.location_label)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
@@ -203,13 +202,10 @@ fun AddEventScreen(
             // Loading indicator
             if (placeUi.isLoading) {
                 item {
-                    Row(modifier = Modifier.padding(top = 6.dp)) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(20.dp),
-                            strokeWidth = 2.dp
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Text("Searching places...")
+                    Row(modifier = Modifier.padding(top = itemGap)) {
+                        CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                        Spacer(Modifier.width(dimensionResource(R.dimen.spacing_sm)))
+                        Text(stringResource(R.string.searching_places))
                     }
                 }
             }
@@ -221,10 +217,10 @@ fun AddEventScreen(
             ) {
                 item {
                     Text(
-                        text = placeUi.error ?: "No results",
+                        text = placeUi.error ?: stringResource(R.string.no_results),
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(top = 6.dp)
+                        modifier = Modifier.padding(top = itemGap)
                     )
                 }
             }
@@ -261,12 +257,12 @@ fun AddEventScreen(
                     modifier = Modifier.fillMaxWidth(),
                     enabled = isFormValid && hasSelection
                 ) {
-                    Text("Save Event")
+                    Text(stringResource(R.string.save_event))
                 }
             }
 
             // Spacer at the bottom so the button has room above the keyboard
-            item { Spacer(Modifier.height(8.dp)) }
+            item { Spacer(Modifier.height(dimensionResource(R.dimen.spacing_sm))) }
         }
     }
 }
@@ -280,9 +276,9 @@ private fun SuggestionRow(s: PlaceSuggestion, onSelect: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onSelect() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = dimensionResource(R.dimen.elevation_low))
     ) {
-        Column(Modifier.padding(12.dp)) {
+        Column(Modifier.padding(dimensionResource(R.dimen.spacing_md))) {
             Text(s.title, style = MaterialTheme.typography.titleSmall)
             s.subtitle?.let {
                 Text(it, style = MaterialTheme.typography.bodySmall)

@@ -7,13 +7,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
+import com.example.evntly.R
 import com.example.evntly.domain.model.Event
 import com.example.evntly.ui.viewmodel.EventViewModel
 
@@ -27,8 +27,7 @@ import com.example.evntly.ui.viewmodel.EventViewModel
 fun EventsScreen(onBack: () -> Unit, viewModel: EventViewModel) {
     val events by viewModel.events.collectAsState()
 
-    Scaffold(
-    ) { padding ->
+    Scaffold { padding ->
         if (events.isEmpty()) {
             Box(
                 modifier = Modifier
@@ -36,15 +35,15 @@ fun EventsScreen(onBack: () -> Unit, viewModel: EventViewModel) {
                     .padding(padding),
                 contentAlignment = Alignment.Center
             ) {
-                Text("No events yet")
+                Text(stringResource(R.string.no_events_yet))
             }
         } else {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                contentPadding = PaddingValues(dimensionResource(R.dimen.spacing_md)),
+                verticalArrangement = Arrangement.spacedBy(dimensionResource(R.dimen.spacing_sm))
             ) {
                 items(events) { event ->
                     EventCard(
@@ -64,34 +63,29 @@ fun EventsScreen(onBack: () -> Unit, viewModel: EventViewModel) {
 fun EventCard(event: Event, onDelete: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = dimensionResource(R.dimen.elevation_mid))
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(dimensionResource(R.dimen.spacing_md)),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    text = event.name,
-                    style = MaterialTheme.typography.titleMedium
-                )
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = event.name, style = MaterialTheme.typography.titleMedium)
                 if (event.description.isNotBlank()) {
                     Text(
                         text = event.description,
                         style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(top = 4.dp)
+                        modifier = Modifier.padding(top = dimensionResource(R.dimen.spacing_xs))
                     )
                 }
                 if (event.location.isNotBlank()) {
                     Text(
                         text = "📍 ${event.location}",
                         style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(top = 4.dp)
+                        modifier = Modifier.padding(top = dimensionResource(R.dimen.spacing_xs))
                     )
                 }
                 /*
@@ -107,8 +101,8 @@ fun EventCard(event: Event, onDelete: () -> Unit) {
             }
             IconButton(onClick = onDelete) {
                 Icon(
-                    Icons.Default.Delete,
-                    contentDescription = "Delete event",
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = stringResource(R.string.delete_event),
                     tint = MaterialTheme.colorScheme.error
                 )
             }

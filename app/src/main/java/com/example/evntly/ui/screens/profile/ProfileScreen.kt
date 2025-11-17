@@ -9,20 +9,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.evntly.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen() {
-    Scaffold(
-    ) { innerPadding ->
+    Scaffold { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(24.dp, 150.dp, 24.dp)
+                .padding(
+                    start = dimensionResource(R.dimen.spacing_md),
+                    end = dimensionResource(R.dimen.spacing_md),
+                    top = dimensionResource(R.dimen.spacing_xl)
+                )
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -30,48 +34,38 @@ fun ProfileScreen() {
             // picture
             Image(
                 painter = painterResource(id = R.drawable.orangewithbgandlogo),
-                contentDescription = "Profile picture",
+                contentDescription = stringResource(R.string.profile_picture),
                 modifier = Modifier
-                    .size(120.dp)
+                    .size(dimensionResource(R.dimen.spacing_xl) * 3)
                     .clip(CircleShape)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_md)))
 
             // username
-            Text(
-                text = "Test User",
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
+            Text(text = stringResource(R.string.test_user), fontSize = 22.sp, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_xs)))
             // email
             Text(
-                text = "test.user@mail.com",
-                fontSize = 16.sp,
+                text = stringResource(R.string.test_user_email),
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_lg)))
 
             // edit and log out buttons
             Button(
                 onClick = { /* TODO: handle edit */ },
                 modifier = Modifier.fillMaxWidth(0.8f)
-            ) {
-                Text("Edit Profile")
-            }
+            ) { Text(stringResource(R.string.edit_profile)) }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_sm)))
 
             OutlinedButton(
                 onClick = { /* TODO: handle logout */ },
                 modifier = Modifier.fillMaxWidth(0.8f)
-            ) {
-                Text("Log Out")
-            }
+            ) { Text(stringResource(R.string.log_out)) }
         }
     }
 }

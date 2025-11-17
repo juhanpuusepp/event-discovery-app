@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.evntly.ui.viewmodel.EventViewModel
 import com.google.android.gms.maps.model.MapStyleOptions
+import androidx.compose.ui.res.stringResource
 
 /**
  * Shows the Google Map via Maps Compose,
@@ -112,7 +113,7 @@ fun MapScreen(
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
         ) {
-            Icon(Icons.Filled.Add, contentDescription = "Add Event")
+            Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add_event))
         }
     }
 }
