@@ -34,7 +34,9 @@ User Login and Profiling - user profiles with Firebase Authentication
 ## Current Tools, frameworks, libraries, APIs
 Room, Retrofit + Moshi, Google Maps API, Nominatim API
 
-Map style: The X-Spot location map by Ruben (https://snazzymaps.com/style/287702/the-x-spot-location-map)
+Lightmode map style: The X-Spot location map by Ruben (https://snazzymaps.com/style/287702/the-x-spot-location-map)
+
+Darkmode map style: From Stackoverflow (https://stackoverflow.com/questions/39191867/night-mode-for-google-maps)
 
 ## Planned Tools, frameworks, libraries, APIs
 Dagger, Firebase
