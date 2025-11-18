@@ -30,13 +30,10 @@ class AddEventScreenTest {
     fun setUp() {
         // Prepare the mock ViewModel before each test
         placeUiStateFlow = MutableStateFlow(EventViewModel.PlaceUiState())
-        selectedDateFlow = MutableStateFlow(null) // Explicitly type for clarity
+        selectedDateFlow = MutableStateFlow(null) 
         viewModel = mockk(relaxed = true) {
             every { placeUiState } returns placeUiStateFlow
-
-            // FIX: This is the correct, simple syntax. The explicit type is not needed here.
             every { selectedDate } returns selectedDateFlow
-
             every { searchPlacesDebounced(any()) } answers {
                 // Simulate the ViewModel getting suggestions
                 placeUiStateFlow.value = EventViewModel.PlaceUiState(
@@ -78,16 +75,14 @@ class AddEventScreenTest {
         // 3. Verify that the location text was updated after selection
         composeRule.onNodeWithTag("location_input").assertTextContains("Tartu, Estonia, Tartumaa")
 
-        // 4. FIX: Mock the date selection instead of trying to click through dialogs
+        // 4. Mock the date selection instead of trying to click through dialogs
         // Create a test date to use
         val testDate = Calendar.getInstance().time
 
-        // Run the state update on the main UI thread, which is required for Compose state changes
+        // Run the state update on the main UI thread for Compose state changes
         composeRule.runOnUiThread {
             viewModel.setSelectedDate(testDate)
         }
-
-        // Wait for the UI to recompose with the new date state
         composeRule.waitForIdle()
 
         // 5. Verify the "Save Event" button is now enabled because all fields are valid
