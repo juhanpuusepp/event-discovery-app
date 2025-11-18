@@ -19,12 +19,20 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import retrofit2.HttpException
+import java.util.Date
 
 /**
  * Viewmodel - a bridge between View and Model
  * Lets the UI communicate to the back-end
  */
 class EventViewModel(private val repository: EventRepository) : ViewModel() {
+    private val _selectedDate = MutableStateFlow<Date?>(null)
+    val selectedDate: StateFlow<Date?> = _selectedDate.asStateFlow()
+
+    fun setSelectedDate(date: Date?) {
+        _selectedDate.value = date
+    }
+
     // Events list from Room
     val events: StateFlow<List<Event>> = repository.getAllEvents()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())

@@ -48,7 +48,7 @@ fun AddEventScreen(
 ) {
     // Form fields
     var name by remember { mutableStateOf("") }
-    var date by remember { mutableStateOf<Date?>(null) }
+    val date by viewModel.selectedDate.collectAsState()
     var price by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var location by remember { mutableStateOf("") }
@@ -152,7 +152,7 @@ fun AddEventScreen(
                 onConfirm = { hour, minute ->
                     datePart!!.set(Calendar.HOUR_OF_DAY, hour)
                     datePart!!.set(Calendar.MINUTE, minute)
-                    date = datePart!!.time // Set the final date
+                    viewModel.setSelectedDate(datePart!!.time) // Set the final date
                     showTimePicker = false
                     datePart = null // Clear the date part
                 }
