@@ -10,3 +10,4 @@ A UI test was written for the Add Event Screen. For this we mocked the viewModel
 
 
 ## Known bugs or limitations
+- When adding an event, you can only select the date and time by clicking on the calender icon not on the whole field itself.
