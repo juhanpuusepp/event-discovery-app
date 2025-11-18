@@ -6,11 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
@@ -36,12 +32,13 @@ import com.example.evntly.ui.components.AppDrawer
 @Composable
 fun AppNavHost(
     modifier: Modifier = Modifier,
-    viewModel: EventViewModel
+    viewModel: EventViewModel,
+    isDarkTheme: Boolean,
+    onToggleTheme: () -> Unit
 ) {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-    val isDarkMap = remember { mutableStateOf(false) }
 
     val currentRoute = navController.currentBackStackEntryFlow
         .collectAsState(initial = navController.currentBackStackEntry)
@@ -50,30 +47,31 @@ fun AppNavHost(
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val halfWidth = screenWidth / 2
 
+
     ModalNavigationDrawer(
         drawerState = drawerState,
-        gesturesEnabled = drawerState.isOpen, // tap to close, swiping disabled
+        gesturesEnabled = drawerState.isOpen,
         drawerContent = {
             AppDrawer(
                 drawerWidth = halfWidth,
                 currentRoute = currentRoute,
                 onNavigate = { route ->
                     scope.launch { drawerState.close() }
-                    // avoid building up duplicates on the stack
                     navController.navigate(route) {
                         launchSingleTop = true
-                        popUpTo(navController.graph.startDestinationId) { saveState = (route != Destinations.MAP) }
+                        popUpTo(navController.graph.startDestinationId) {
+                            saveState = (route != Destinations.MAP)
+                        }
                         restoreState = (route != Destinations.MAP)
                     }
                 },
-                onToggleDarkMap = {
-                    isDarkMap.value = !isDarkMap.value
-                },
-                isDarkMap = isDarkMap.value
-                )
+                onToggleDarkMode = onToggleTheme,
+                isDarkMode = isDarkTheme
+            )
         }
     ) {
         Scaffold(
+            containerColor = MaterialTheme.colorScheme.background,
             topBar = {
                 AppTopBar(
                     title = "",
@@ -99,7 +97,7 @@ fun AppNavHost(
                         MapScreen(
                             onAddEvent = { navController.navigate(Destinations.ADD_EVENT) },
                             viewModel = viewModel,
-                            isDarkMap = isDarkMap.value
+                            isDarkMap = isDarkTheme
                         )
                     }
                     composable(Destinations.EVENTS) {

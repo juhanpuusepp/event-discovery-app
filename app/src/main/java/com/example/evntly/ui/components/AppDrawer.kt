@@ -9,22 +9,24 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import com.example.evntly.R
 import com.example.evntly.ui.navigation.Destinations
-import com.google.android.gms.maps.model.MapStyleOptions
+import com.example.evntly.ui.theme.DarkGrey
+import com.example.evntly.ui.theme.LightGrey
 
 /**
  * Component to create the drawer
  */
-
 @Composable
 fun AppDrawer(
     drawerWidth: Dp,
     currentRoute: String?,
     onNavigate: (String) -> Unit,
-    onToggleDarkMap: () -> Unit,
-    isDarkMap: Boolean
+    onToggleDarkMode: () -> Unit,
+    isDarkMode: Boolean
 ) {
     Box(modifier = Modifier.width(drawerWidth)) {
-        ModalDrawerSheet {
+        ModalDrawerSheet(
+            drawerContainerColor = MaterialTheme.colorScheme.surface
+        ) {
             NavigationDrawerItem(
                 label = { Text(stringResource(R.string.map)) },
                 selected = currentRoute == Destinations.MAP,
@@ -43,16 +45,16 @@ fun AppDrawer(
             NavigationDrawerItem(
                 label = {
                     Text(
-                        if (isDarkMap) stringResource(R.string.light_mode)
+                        if (isDarkMode) stringResource(R.string.light_mode)
                         else stringResource(R.string.dark_mode)
                     )
                 },
                 selected = false,
-                onClick = { onToggleDarkMap },
-                badge = { //The slider, left there for now if there is interest in it
+                onClick = onToggleDarkMode,
+                badge = {
                     Switch(
-                        checked = isDarkMap,
-                        onCheckedChange = { onToggleDarkMap() }
+                        checked = isDarkMode,
+                        onCheckedChange = { onToggleDarkMode() }
                     )
                 }
             )

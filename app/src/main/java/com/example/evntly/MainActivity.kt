@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.room.Room
 import com.example.evntly.data.local.EventDatabase
@@ -32,8 +34,16 @@ class MainActivity : ComponentActivity() {
 
         installSplashScreen()
         setContent {
-            EvntlyTheme {
-                AppNavHost(viewModel = viewModel)
+            // Create state to track dark mode
+            val isDarkTheme = remember { mutableStateOf(false) }
+
+            EvntlyTheme(darkTheme = isDarkTheme.value,
+                dynamicColor = false) {
+                AppNavHost(
+                    viewModel = viewModel,
+                    isDarkTheme = isDarkTheme.value,
+                    onToggleTheme = { isDarkTheme.value = !isDarkTheme.value }
+                )
             }
         }
     }
