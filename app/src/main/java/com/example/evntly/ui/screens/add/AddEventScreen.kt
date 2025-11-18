@@ -17,6 +17,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -134,7 +135,7 @@ fun AddEventScreen(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text("Event Name") },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().testTag("name_input"),
                     singleLine = true
                 )
             }
@@ -148,7 +149,8 @@ fun AddEventScreen(
                     label = { Text("Date & Time") },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { showDateTimePicker() },
+                        .clickable { showDateTimePicker() }
+                        .testTag("date_time_input"),
                     singleLine = true,
                     trailingIcon = {
                         IconButton(onClick = { showDateTimePicker() }) {
@@ -173,7 +175,7 @@ fun AddEventScreen(
                     },
                     label = { Text("Price (€)") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().testTag("price_input"),
                     singleLine = true
                 )
             }
@@ -184,7 +186,7 @@ fun AddEventScreen(
                     value = description,
                     onValueChange = { description = it },
                     label = { Text("Description") },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().testTag("description_input"),
                     maxLines = 3
                 )
             }
@@ -195,7 +197,7 @@ fun AddEventScreen(
                     value = location,
                     onValueChange = { onLocationChange(it) },
                     label = { Text("Location") },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().testTag("location_input"),
                     singleLine = true
                 )
             }
@@ -258,7 +260,7 @@ fun AddEventScreen(
                         )
                         onBack()
                     },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().testTag("save_button"),
                     enabled = isFormValid && hasSelection
                 ) {
                     Text("Save Event")
