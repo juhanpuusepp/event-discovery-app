@@ -109,7 +109,7 @@ fun AddEventScreen(
                 // Set the minimum selectable date to tomorrow
                 selectableDates = object : SelectableDates {
                     override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                        return utcTimeMillis >= System.currentTimeMillis() + 24L * 60 * 60 * 1000
+                        return utcTimeMillis >= System.currentTimeMillis() // Allow dates from today onwards.
                     }
                 }
             )
