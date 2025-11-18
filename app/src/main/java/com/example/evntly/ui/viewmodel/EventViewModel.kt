@@ -15,6 +15,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.delay
 import com.example.evntly.data.remote.RetrofitModule
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import retrofit2.HttpException
 
 /**
@@ -48,17 +51,17 @@ class EventViewModel(private val repository: EventRepository) : ViewModel() {
     private val _placeUiState = MutableStateFlow(PlaceUiState())
     val placeUiState = _placeUiState.asStateFlow()
 
-    // Simple retry/backoff helper (retry once on 503/429)
-    private suspend fun <T> withRetryOnce(block: suspend () -> T): T {
-        return try {
-            block()
-        } catch (e: HttpException) {
-            if (e.code() == 503 || e.code() == 429) {
-                delay(2000) // brief backoff
-                block()
-            } else {
-                throw e
-            }
+    private val queryFlow = MutableStateFlow("")
+    private val cache = mutableMapOf<String, List<PlaceSuggestion>>()
+
+    init {
+        viewModelScope.launch {
+            queryFlow
+                .debounce(400) // faster debounce
+                .distinctUntilChanged()
+                .collectLatest { query ->
+                    performSearch(query)
+                }
         }
     }
 
@@ -66,35 +69,63 @@ class EventViewModel(private val repository: EventRepository) : ViewModel() {
      * Debounced search against Nominatim
      */
     fun searchPlacesDebounced(query: String) {
-        if (query.length < 3) {
-            _placeUiState.value = PlaceUiState() // clear suggestions & error
+        queryFlow.value = query
+    }
+
+    private suspend fun performSearch(query: String) {
+        val trimmed = query.trim()
+        if (trimmed.length < 3) {
+            _placeUiState.value = PlaceUiState()
             return
         }
-        viewModelScope.launch {
-            _placeUiState.update { it.copy(isLoading = true, error = null, suggestions = emptyList()) }
-            try {
-                // simple debounce to stay under 1 req/sec while typing
-                delay(800)
 
-                // Estonia viewbox (left,top,right,bottom) - helps reduce slow, global searches -> fewer 503s
-                val viewbox = "21.5,59.8,28.2,57.3" // rough EE bounds
-                val bounded = 1
+        // Check cache first
+        cache[trimmed.lowercase()]?.let { cached ->
+            _placeUiState.value = PlaceUiState(isLoading = false, suggestions = cached)
+            return
+        }
 
-                val results = withRetryOnce {
-                    RetrofitModule.nominatim
-                        .search(
-                            query = query,
-                            viewbox = viewbox,
-                            bounded = bounded
-                        )
-                }.map { it.toSuggestion() }
+        _placeUiState.update { it.copy(isLoading = true, error = null) }
 
-                _placeUiState.update { it.copy(isLoading = false, suggestions = results, error = null) }
-            } catch (e: Exception) {
-                _placeUiState.update {
-                    it.copy(isLoading = false, error = e.message ?: "Network error")
-                }
+        try {
+            val viewbox = "21.5,59.8,28.2,57.3"
+            val bounded = 1
+
+            val results = withRetryOnce {
+                RetrofitModule.nominatim.search(
+                    query = trimmed,
+                    viewbox = viewbox,
+                    bounded = bounded
+                )
+            }.map { it.toSuggestion() }
+
+            cache[trimmed.lowercase()] = results
+
+            _placeUiState.update {
+                it.copy(isLoading = false, suggestions = results, error = null)
             }
+        } catch (e: HttpException) {
+            val msg = when (e.code()) {
+                400 -> "Bad request — Nominatim rejected the query."
+                429 -> "Rate limit reached — please wait a few seconds."
+                else -> "Server error (${e.code()})"
+            }
+            _placeUiState.update { it.copy(isLoading = false, error = msg) }
+        } catch (e: Exception) {
+            _placeUiState.update {
+                it.copy(isLoading = false, error = e.message ?: "Network error")
+            }
+        }
+    }
+
+    private suspend fun <T> withRetryOnce(block: suspend () -> T): T {
+        return try {
+            block()
+        } catch (e: HttpException) {
+            if (e.code() == 503 || e.code() == 429) {
+                delay(1500)
+                block()
+            } else throw e
         }
     }
 
