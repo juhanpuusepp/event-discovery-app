@@ -36,7 +36,7 @@ Room, Retrofit + Moshi, Google Maps API, Nominatim API
 
 Lightmode map style: The X-Spot location map by Ruben (https://snazzymaps.com/style/287702/the-x-spot-location-map)
 
-Darkmode map style: From Stackoverflow (https://stackoverflow.com/questions/39191867/night-mode-for-google-maps)
+Darkmode map style: Dark by Roy (https://snazzymaps.com/style/71079/dark)
 
 ## Planned Tools, frameworks, libraries, APIs
 Dagger, Firebase
