@@ -1,34 +1,82 @@
 package com.example.evntly.ui.screens.map
 
 import android.Manifest
-import com.example.evntly.R
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import com.example.evntly.R
+import com.example.evntly.ui.viewmodel.EventViewModel
+import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.MapsInitializer
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.*
+import com.google.android.gms.maps.model.MapStyleOptions
+import com.google.maps.android.compose.CameraPositionState
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import com.example.evntly.ui.viewmodel.EventViewModel
-import com.google.android.gms.maps.model.MapStyleOptions
-import androidx.compose.ui.res.stringResource
 
+/**
+ * Helper to create a BitmapDescriptor from a PNG in drawable,
+ * scaled to the given size in dp.
+ */
+private fun bitmapDescriptorFromRes(
+    context: Context,
+    @DrawableRes resId: Int,
+    sizeDp: Dp
+): BitmapDescriptor? {
+    val resources = context.resources
+    val density = resources.displayMetrics.density
+    val sizePx = (sizeDp.value * density).toInt().coerceAtLeast(1)
+
+    val originalBitmap = BitmapFactory.decodeResource(resources, resId) ?: return null
+
+    val scaledBitmap = Bitmap.createScaledBitmap(
+        originalBitmap,
+        sizePx,
+        sizePx,
+        true
+    )
+
+    // ensure Maps SDK is initialized before using BitmapDescriptorFactory
+    return try {
+        MapsInitializer.initialize(context.applicationContext)
+        BitmapDescriptorFactory.fromBitmap(scaledBitmap)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
+}
 /**
  * Shows the Google Map via Maps Compose,
  * requests location permission,
@@ -81,7 +129,15 @@ fun MapScreen(
         }
     }
 
-    // Just the map and button, no Scaffold
+    // create the custom marker icon once and remember it
+    val markerIcon = remember {
+        bitmapDescriptorFromRes(
+            context = context,
+            resId = R.drawable.marker,
+            sizeDp = 40.dp // marker size can be tweaked here
+        )
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
@@ -96,13 +152,18 @@ fun MapScreen(
             )
         ) {
             // draw a marker for each event that has coordinates
-            events.filter { it.latitude != null && it.longitude != null }.forEach { event ->
-                Marker(
-                    state = MarkerState(position = LatLng(event.latitude!!, event.longitude!!)),
-                    title = event.name,
-                    snippet = event.location
-                )
-            }
+            events
+                .filter { it.latitude != null && it.longitude != null }
+                .forEach { event ->
+                    Marker(
+                        state = MarkerState(
+                            position = LatLng(event.latitude!!, event.longitude!!)
+                        ),
+                        title = event.name,
+                        snippet = event.location,
+                        icon = markerIcon
+                    )
+                }
         }
 
         FloatingActionButton(
@@ -118,11 +179,10 @@ fun MapScreen(
     }
 }
 
-
 // gets the last known location and moves the camera to that location
 @SuppressLint("MissingPermission")
 private fun tryCenterToLastLocation(
-    fusedLocationClient: com.google.android.gms.location.FusedLocationProviderClient,
+    fusedLocationClient: FusedLocationProviderClient,
     cameraPositionState: CameraPositionState,
     scope: CoroutineScope
 ) {
