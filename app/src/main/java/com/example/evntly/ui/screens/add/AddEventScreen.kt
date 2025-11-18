@@ -15,6 +15,9 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
@@ -56,6 +59,10 @@ fun AddEventScreen(
     val placeUi = viewModel.placeUiState.collectAsState().value
     val hasSelection = selectedLat != null && selectedLon != null
 
+    var showDatePicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
+    var datePart by remember { mutableStateOf<Calendar?>(null) }
+
     // Typing in the location box triggers debounced API search
     fun onLocationChange(text: String) {
         location = text
@@ -68,33 +75,9 @@ fun AddEventScreen(
     val calendar = Calendar.getInstance()
     val context = LocalContext.current
 
-    // Date + time picker
-    fun showDateTimePicker() {
-        val datePicker = DatePickerDialog(
-            context,
-            { _, year, month, dayOfMonth ->
-                val selectedDate = Calendar.getInstance()
-                selectedDate.set(year, month, dayOfMonth)
-
-                val timePicker = TimePickerDialog(
-                    context,
-                    { _, hour, minute ->
-                        selectedDate.set(Calendar.HOUR_OF_DAY, hour)
-                        selectedDate.set(Calendar.MINUTE, minute)
-                        date = selectedDate.time
-                    },
-                    calendar.get(Calendar.HOUR_OF_DAY),
-                    calendar.get(Calendar.MINUTE),
-                    true
-                )
-                timePicker.show()
-            },
-            calendar.get(Calendar.YEAR),
-            calendar.get(Calendar.MONTH),
-            calendar.get(Calendar.DAY_OF_MONTH)
-        )
-        datePicker.datePicker.minDate = System.currentTimeMillis() + 24L * 60 * 60 * 1000
-        datePicker.show()
+    // Date picker
+    fun showDatePicker() {
+        showDatePicker = true
     }
 
     // Validation rules
@@ -119,6 +102,62 @@ fun AddEventScreen(
         val listState = rememberLazyListState()
         val screenPad = dimensionResource(R.dimen.spacing_md)
         val itemGap = dimensionResource(R.dimen.spacing_sm)
+
+        // *** DatePickerDialog composable ***
+        if (showDatePicker) {
+            val datePickerState = rememberDatePickerState(
+                // Set the minimum selectable date to tomorrow
+                selectableDates = object : SelectableDates {
+                    override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                        return utcTimeMillis >= System.currentTimeMillis() + 24L * 60 * 60 * 1000
+                    }
+                }
+            )
+            DatePickerDialog(
+                onDismissRequest = { showDatePicker = false },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            // When the user confirms, get the selected date
+                            datePickerState.selectedDateMillis?.let { millis ->
+                                val selectedDate = Calendar.getInstance().apply {
+                                    timeInMillis = millis
+                                }
+                                // Save the date part and trigger the time picker
+                                datePart = selectedDate
+                                showTimePicker = true
+                            }
+                            showDatePicker = false // Close the date picker
+                        }
+                    ) {
+                        Text("OK")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDatePicker = false }) {
+                        Text("Cancel")
+                    }
+                }
+            ) {
+                DatePicker(state = datePickerState)
+            }
+        }
+
+        // *** TimePickerDialog composable ***
+        if (showTimePicker && datePart != null) {
+            TimePickerDialogWithInput(
+                initialHour = calendar.get(Calendar.HOUR_OF_DAY),
+                initialMinute = calendar.get(Calendar.MINUTE),
+                onDismiss = { showTimePicker = false },
+                onConfirm = { hour, minute ->
+                    datePart!!.set(Calendar.HOUR_OF_DAY, hour)
+                    datePart!!.set(Calendar.MINUTE, minute)
+                    date = datePart!!.time // Set the final date
+                    showTimePicker = false
+                    datePart = null // Clear the date part
+                }
+            )
+        }
 
         LazyColumn(
             state = listState,
@@ -148,11 +187,11 @@ fun AddEventScreen(
                     label = { Text(stringResource(R.string.date_time_label)) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { showDateTimePicker() }
+                        .clickable(onClick = { showDatePicker() })
                         .testTag("date_time_input"),
                     singleLine = true,
                     trailingIcon = {
-                        IconButton(onClick = { showDateTimePicker() }) {
+                        IconButton(onClick = { showDatePicker() }) {
                             Icon(
                                 Icons.Default.DateRange,
                                 contentDescription = stringResource(R.string.pick_date_time),
@@ -280,11 +319,57 @@ private fun SuggestionRow(s: PlaceSuggestion, onSelect: () -> Unit) {
             .clickable { onSelect() },
         elevation = CardDefaults.cardElevation(defaultElevation = dimensionResource(R.dimen.elevation_low))
     ) {
-        Column(Modifier.padding(dimensionResource(R.dimen.spacing_md))) {
+        Column(Modifier.padding(12.dp)) {
             Text(s.title, style = MaterialTheme.typography.titleSmall)
             s.subtitle?.let {
                 Text(it, style = MaterialTheme.typography.bodySmall)
             }
         }
     }
+}
+
+/**
+ * Custom composable to display the Material 3 TimeInput inside a dialog.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TimePickerDialogWithInput(
+    initialHour: Int,
+    initialMinute: Int,
+    onDismiss: () -> Unit,
+    onConfirm: (hour: Int, minute: Int) -> Unit
+) {
+    val timeState = rememberTimePickerState(
+        initialHour = initialHour,
+        initialMinute = initialMinute,
+        is24Hour = true // You can change this based on your preference
+    )
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text("Select Time", style = MaterialTheme.typography.headlineSmall)
+        },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // TimeInput is the key change here
+                TimeInput(state = timeState)
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { onConfirm(timeState.hour, timeState.minute) }
+            ) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }
