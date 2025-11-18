@@ -35,4 +35,8 @@
 
     <!-- Map Screen -->
     <string name="add_event">Add Event</string>
+
+    <!-- Profile test view in sidebar -->
+    <string name="profile_name">Test User</string>
+    <string name="profile_name_subtext">View profile</string>
 </resources>
