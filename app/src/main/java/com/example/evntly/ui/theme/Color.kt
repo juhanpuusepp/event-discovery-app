@@ -5,8 +5,10 @@ import androidx.compose.ui.graphics.Color
 // Brand color
 val EvntlyOrange = Color(0xFFE86450)
 
-val LightGrey = Color(0xFF8D8B8B)
+val LightGrey = Color(0xFFBDBDBD)
 val DarkGrey = Color(0xFF4D4C4C)
+val greyTextColor = Color(0xFF1A1A1A) // lightmode secondary text color
+val greyTextColor2 = Color(0xFFBBBBBB) // darkmode secondary text color
 
 
 val Purple80 = Color(0xFFD0BCFF)
