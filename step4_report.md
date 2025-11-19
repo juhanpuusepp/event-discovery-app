@@ -7,7 +7,12 @@ We mocked the repository and the Nominatim API, and created a fake event to run 
 A UI test was written for the Add Event Screen. For this we mocked the viewModel and its state, and simulating filling out the form for adding a new event. The test passes once the "Save event" button is clicked and the event has been added to the database.
  
 ## Build process for APK  
-
+- "Generate Signed Bundle / APK" wizard
+- Created the keystore with passwords and an alias
+- Build type: "release"
+- Built and locate the APK
 
 ## Known bugs or limitations
 - When adding an event, you can only select the date and time by clicking on the calender icon not on the whole field itself.
+- When writing event description, only way to escape the text field is to click on another field
+- Lightmode and darkmode maps could use some more evening
