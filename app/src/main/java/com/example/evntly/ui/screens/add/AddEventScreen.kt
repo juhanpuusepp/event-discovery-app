@@ -3,6 +3,7 @@ package com.example.evntly.ui.screens.add
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -180,26 +181,33 @@ fun AddEventScreen(
 
             // Date & time
             item {
-                OutlinedTextField(
-                    value = date?.let { dateFormat.format(it) } ?: "",
-                    onValueChange = {},
-                    readOnly = true,
-                    label = { Text(stringResource(R.string.date_time_label)) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = { showDatePicker() })
-                        .testTag("date_time_input"),
-                    singleLine = true,
-                    trailingIcon = {
-                        IconButton(onClick = { showDatePicker() }) {
-                            Icon(
-                                Icons.Default.DateRange,
-                                contentDescription = stringResource(R.string.pick_date_time),
-                                tint = MaterialTheme.colorScheme.primary
-                            )
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(
+                        value = date?.let { dateFormat.format(it) } ?: "",
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text(stringResource(R.string.date_time_label)) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .testTag("date_time_input"),
+                        singleLine = true,
+                        trailingIcon = {
+                            IconButton(onClick = { showDatePicker() }) {
+                                Icon(
+                                    Icons.Default.DateRange,
+                                    contentDescription = stringResource(R.string.pick_date_time),
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         }
-                    }
-                )
+                    )
+                    // Full-overlay click target so tapping anywhere opens the picker
+                    Spacer(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .clickable(onClick = { showDatePicker() }, indication = null, interactionSource = remember { MutableInteractionSource() })
+                    )
+                }
             }
 
             // Price
