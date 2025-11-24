@@ -30,7 +30,7 @@ import java.util.Locale
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EventsScreen(onBack: () -> Unit, viewModel: EventViewModel) {
+fun EventsScreen(viewModel: EventViewModel) {
     val events by viewModel.events.collectAsState()
 
     Scaffold { padding ->

@@ -109,7 +109,6 @@ fun AppNavHost(
                     }
                     composable(Destinations.EVENTS) {
                         EventsScreen(
-                            onBack = { navController.popBackStack(Destinations.MAP, false) },
                             viewModel = viewModel
                         )
                     }
