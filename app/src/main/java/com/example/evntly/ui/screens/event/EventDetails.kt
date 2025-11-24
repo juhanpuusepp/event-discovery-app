@@ -23,6 +23,11 @@ import com.example.evntly.R
 import com.example.evntly.ui.theme.EvntlyOrange
 import java.text.SimpleDateFormat
 import java.util.Locale
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.Place
+import androidx.compose.material.icons.outlined.Euro
+import androidx.compose.material3.Icon
 
 /**
  * Shows an event detail sheet using Material 3 ModalBottomSheet.
@@ -85,20 +90,35 @@ fun EventDetails(
 
             // date & time
             Row(horizontalArrangement = Arrangement.spacedBy(rowGap)) {
-                Text("📅")
+                Icon(
+                    imageVector = Icons.Outlined.CalendarMonth,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
                 Text(text = formattedDate, style = MaterialTheme.typography.bodyMedium)
             }
 
             // location
             Row(horizontalArrangement = Arrangement.spacedBy(rowGap)) {
-                Text("📍")
+                Icon(
+                    imageVector = Icons.Outlined.Place,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
                 Text(text = event.location, style = MaterialTheme.typography.bodyMedium)
             }
 
             // price
             Row(horizontalArrangement = Arrangement.spacedBy(rowGap)) {
-                Text("💶")
-                Text(text = event.price.toString() + "€", style = MaterialTheme.typography.bodyMedium)
+                Icon(
+                    imageVector = Icons.Outlined.Euro,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
+                Text(text = String.format(Locale.getDefault(), "%.2f", event.price), style = MaterialTheme.typography.bodyMedium)
             }
 
             // description
