@@ -1,7 +1,5 @@
 package com.example.evntly.ui.screens.add
 
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -11,7 +9,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,7 +17,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -33,6 +29,10 @@ import com.example.evntly.domain.model.PlaceSuggestion
 import com.example.evntly.ui.viewmodel.EventViewModel
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 
 /**
  * Screen for adding a new event.
@@ -74,7 +74,6 @@ fun AddEventScreen(
 
     val dateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.getDefault())
     val calendar = Calendar.getInstance()
-    val context = LocalContext.current
 
     // Date picker
     fun showDatePicker() {
@@ -95,223 +94,240 @@ fun AddEventScreen(
             description.isNotBlank() &&
             location.isNotBlank()
 
-    Scaffold(
-        topBar = {
-            TopAppBar(title = { Text(stringResource(R.string.add_event_title)) })
-        }
-    ) { innerPadding ->
-        val listState = rememberLazyListState()
-        val screenPad = dimensionResource(R.dimen.spacing_md)
-        val itemGap = dimensionResource(R.dimen.spacing_sm)
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
-        // *** DatePickerDialog composable ***
-        if (showDatePicker) {
-            val datePickerState = rememberDatePickerState(
-                // Set the minimum selectable date to tomorrow
-                selectableDates = object : SelectableDates {
-                    override fun isSelectableDate(utcTimeMillis: Long): Boolean {
-                        return utcTimeMillis >= System.currentTimeMillis() // Allow dates from today onwards.
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pointerInput(Unit) {
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
+                })
+            }
+    ) {
+        Scaffold(
+            topBar = {
+                TopAppBar(title = { Text(stringResource(R.string.add_event_title)) })
+            }
+        ) { innerPadding ->
+            val listState = rememberLazyListState()
+            val screenPad = dimensionResource(R.dimen.spacing_md)
+            val itemGap = dimensionResource(R.dimen.spacing_sm)
+
+            // DatePickerDialog composable
+            if (showDatePicker) {
+                val datePickerState = rememberDatePickerState(
+                    // Set the minimum selectable date to tomorrow
+                    selectableDates = object : SelectableDates {
+                        override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                            return utcTimeMillis >= System.currentTimeMillis() // Allow dates from today onwards
+                        }
                     }
-                }
-            )
-            DatePickerDialog(
-                onDismissRequest = { showDatePicker = false },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            // When the user confirms, get the selected date
-                            datePickerState.selectedDateMillis?.let { millis ->
-                                val selectedDate = Calendar.getInstance().apply {
-                                    timeInMillis = millis
+                )
+                DatePickerDialog(
+                    onDismissRequest = { showDatePicker = false },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                // When the user confirms, get the selected date
+                                datePickerState.selectedDateMillis?.let { millis ->
+                                    val selectedDate = Calendar.getInstance().apply {
+                                        timeInMillis = millis
+                                    }
+                                    // Save the date part and trigger the time picker
+                                    datePart = selectedDate
+                                    showTimePicker = true
                                 }
-                                // Save the date part and trigger the time picker
-                                datePart = selectedDate
-                                showTimePicker = true
+                                showDatePicker = false // Close the date picker
                             }
-                            showDatePicker = false // Close the date picker
-                        }
-                    ) {
-                        Text("OK")
-                    }
-                },
-                dismissButton = {
-                    TextButton(onClick = { showDatePicker = false }) {
-                        Text("Cancel")
-                    }
-                }
-            ) {
-                DatePicker(state = datePickerState)
-            }
-        }
-
-        // *** TimePickerDialog composable ***
-        if (showTimePicker && datePart != null) {
-            TimePickerDialogWithInput(
-                initialHour = calendar.get(Calendar.HOUR_OF_DAY),
-                initialMinute = calendar.get(Calendar.MINUTE),
-                onDismiss = { showTimePicker = false },
-                onConfirm = { hour, minute ->
-                    datePart!!.set(Calendar.HOUR_OF_DAY, hour)
-                    datePart!!.set(Calendar.MINUTE, minute)
-                    viewModel.setSelectedDate(datePart!!.time) // Set the final date
-                    showTimePicker = false
-                    datePart = null // Clear the date part
-                }
-            )
-        }
-
-        LazyColumn(
-            state = listState,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(screenPad),
-            contentPadding = innerPadding,
-            verticalArrangement = Arrangement.spacedBy(itemGap)
-        ) {
-            // Event name
-            item {
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text(stringResource(R.string.event_name_label)) },
-                    modifier = Modifier.fillMaxWidth().testTag("name_input"),
-                    singleLine = true
-                )
-            }
-
-            // Date & time
-            item {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    OutlinedTextField(
-                        value = date?.let { dateFormat.format(it) } ?: "",
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text(stringResource(R.string.date_time_label)) },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .testTag("date_time_input"),
-                        singleLine = true,
-                        trailingIcon = {
-                            IconButton(onClick = { showDatePicker() }) {
-                                Icon(
-                                    Icons.Default.DateRange,
-                                    contentDescription = stringResource(R.string.pick_date_time),
-                                    tint = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        }
-                    )
-                    // Full-overlay click target so tapping anywhere opens the picker
-                    Spacer(
-                        modifier = Modifier
-                            .matchParentSize()
-                            .clickable(onClick = { showDatePicker() }, indication = null, interactionSource = remember { MutableInteractionSource() })
-                    )
-                }
-            }
-
-            // Price
-            item {
-                OutlinedTextField(
-                    value = price,
-                    onValueChange = { newValue ->
-                        if (newValue.isEmpty() || newValue.matches(Regex("^\\d{0,8}(\\.\\d{0,2})?$"))) {
-                            price = newValue
+                        ) {
+                            Text("OK")
                         }
                     },
-                    label = { Text(stringResource(R.string.price_label)) },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth().testTag("price_input"),
-                    singleLine = true
-                )
-            }
-
-            // Description
-            item {
-                OutlinedTextField(
-                    value = description,
-                    onValueChange = { description = it },
-                    label = { Text(stringResource(R.string.description_label)) },
-                    modifier = Modifier.fillMaxWidth().testTag("description_input"),
-                    maxLines = 3
-                )
-            }
-
-            // Location
-            item {
-                OutlinedTextField(
-                    value = location,
-                    onValueChange = { onLocationChange(it) },
-                    label = { Text(stringResource(R.string.location_label)) },
-                    modifier = Modifier.fillMaxWidth().testTag("location_input"),
-                    singleLine = true
-                )
-            }
-
-            // Loading indicator
-            if (placeUi.isLoading) {
-                item {
-                    Row(modifier = Modifier.padding(top = itemGap)) {
-                        CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
-                        Spacer(Modifier.width(dimensionResource(R.dimen.spacing_sm)))
-                        Text(stringResource(R.string.searching_places))
+                    dismissButton = {
+                        TextButton(onClick = { showDatePicker = false }) {
+                            Text("Cancel")
+                        }
                     }
-                }
-            }
-
-            // Error/No results
-            if (!placeUi.isLoading
-                && !hasSelection
-                && (placeUi.error != null || (location.length >= 3 && placeUi.suggestions.isEmpty()))
-            ) {
-                item {
-                    Text(
-                        text = placeUi.error ?: stringResource(R.string.no_results),
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(top = itemGap)
-                    )
-                }
-            }
-
-            // Suggestions list
-            if (placeUi.suggestions.isNotEmpty()) {
-                items(placeUi.suggestions) { s: PlaceSuggestion ->
-                    SuggestionRow(s) {
-                        location = listOfNotNull(s.title, s.subtitle).joinToString(", ")
-                        selectedLat = s.latitude
-                        selectedLon = s.longitude
-                        viewModel.clearPlaceSuggestions()
-                    }
-                }
-            }
-
-            // Save Event button
-            item {
-                Button(
-                    onClick = {
-                        viewModel.addEvent(
-                            Event(
-                                name = name,
-                                date = date!!,
-                                price = price.toDouble(),
-                                description = description,
-                                location = location,
-                                latitude = selectedLat,
-                                longitude = selectedLon
-                            )
-                        )
-                        onBack()
-                    },
-                    modifier = Modifier.fillMaxWidth().testTag("save_button"),
-                    enabled = isFormValid && hasSelection
                 ) {
-                    Text(stringResource(R.string.save_event))
+                    DatePicker(state = datePickerState)
                 }
             }
 
-            // Spacer at the bottom so the button has room above the keyboard
-            item { Spacer(Modifier.height(dimensionResource(R.dimen.spacing_sm))) }
+            // TimePickerDialog composable
+            if (showTimePicker && datePart != null) {
+                TimePickerDialogWithInput(
+                    initialHour = calendar.get(Calendar.HOUR_OF_DAY),
+                    initialMinute = calendar.get(Calendar.MINUTE),
+                    onDismiss = { showTimePicker = false },
+                    onConfirm = { hour, minute ->
+                        datePart!!.set(Calendar.HOUR_OF_DAY, hour)
+                        datePart!!.set(Calendar.MINUTE, minute)
+                        viewModel.setSelectedDate(datePart!!.time) // Set the final date
+                        showTimePicker = false
+                        datePart = null // Clear the date part
+                    }
+                )
+            }
+
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(screenPad),
+                contentPadding = innerPadding,
+                verticalArrangement = Arrangement.spacedBy(itemGap)
+            ) {
+                // Event name
+                item {
+                    OutlinedTextField(
+                        value = name,
+                        onValueChange = { name = it },
+                        label = { Text(stringResource(R.string.event_name_label)) },
+                        modifier = Modifier.fillMaxWidth().testTag("name_input"),
+                        singleLine = true
+                    )
+                }
+
+                // Date & time
+                item {
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        OutlinedTextField(
+                            value = date?.let { dateFormat.format(it) } ?: "",
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text(stringResource(R.string.date_time_label)) },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("date_time_input"),
+                            singleLine = true,
+                            trailingIcon = {
+                                IconButton(onClick = { showDatePicker() }) {
+                                    Icon(
+                                        Icons.Default.DateRange,
+                                        contentDescription = stringResource(R.string.pick_date_time),
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                        )
+                        // Full-overlay click target so tapping anywhere opens the picker
+                        Spacer(
+                            modifier = Modifier
+                                .matchParentSize()
+                                .clickable(
+                                    onClick = { showDatePicker() },
+                                    indication = null,
+                                    interactionSource = remember { MutableInteractionSource() })
+                        )
+                    }
+                }
+
+                // Price
+                item {
+                    OutlinedTextField(
+                        value = price,
+                        onValueChange = { newValue ->
+                            if (newValue.isEmpty() || newValue.matches(Regex("^\\d{0,8}(\\.\\d{0,2})?$"))) {
+                                price = newValue
+                            }
+                        },
+                        label = { Text(stringResource(R.string.price_label)) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.fillMaxWidth().testTag("price_input"),
+                        singleLine = true
+                    )
+                }
+
+                // Description
+                item {
+                    OutlinedTextField(
+                        value = description,
+                        onValueChange = { description = it },
+                        label = { Text(stringResource(R.string.description_label)) },
+                        modifier = Modifier.fillMaxWidth().testTag("description_input"),
+                        maxLines = 3
+                    )
+                }
+
+                // Location
+                item {
+                    OutlinedTextField(
+                        value = location,
+                        onValueChange = { onLocationChange(it) },
+                        label = { Text(stringResource(R.string.location_label)) },
+                        modifier = Modifier.fillMaxWidth().testTag("location_input"),
+                        singleLine = true
+                    )
+                }
+
+                // Loading indicator
+                if (placeUi.isLoading) {
+                    item {
+                        Row(modifier = Modifier.padding(top = itemGap)) {
+                            CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
+                            Spacer(Modifier.width(dimensionResource(R.dimen.spacing_sm)))
+                            Text(stringResource(R.string.searching_places))
+                        }
+                    }
+                }
+
+                // Error/No results
+                if (!placeUi.isLoading
+                    && !hasSelection
+                    && (placeUi.error != null || (location.length >= 3 && placeUi.suggestions.isEmpty()))
+                ) {
+                    item {
+                        Text(
+                            text = placeUi.error ?: stringResource(R.string.no_results),
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(top = itemGap)
+                        )
+                    }
+                }
+
+                // Suggestions list
+                if (placeUi.suggestions.isNotEmpty()) {
+                    items(placeUi.suggestions) { s: PlaceSuggestion ->
+                        SuggestionRow(s) {
+                            location = listOfNotNull(s.title, s.subtitle).joinToString(", ")
+                            selectedLat = s.latitude
+                            selectedLon = s.longitude
+                            viewModel.clearPlaceSuggestions()
+                        }
+                    }
+                }
+
+                // Save Event button
+                item {
+                    Button(
+                        onClick = {
+                            viewModel.addEvent(
+                                Event(
+                                    name = name,
+                                    date = date!!,
+                                    price = price.toDouble(),
+                                    description = description,
+                                    location = location,
+                                    latitude = selectedLat,
+                                    longitude = selectedLon
+                                )
+                            )
+                            onBack()
+                        },
+                        modifier = Modifier.fillMaxWidth().testTag("save_button"),
+                        enabled = isFormValid && hasSelection
+                    ) {
+                        Text(stringResource(R.string.save_event))
+                    }
+                }
+
+                // Spacer at the bottom so the button has room above the keyboard
+                item { Spacer(Modifier.height(dimensionResource(R.dimen.spacing_sm))) }
+            }
         }
     }
 }
@@ -350,7 +366,7 @@ fun TimePickerDialogWithInput(
     val timeState = rememberTimePickerState(
         initialHour = initialHour,
         initialMinute = initialMinute,
-        is24Hour = true // You can change this based on your preference
+        is24Hour = true
     )
 
     AlertDialog(
