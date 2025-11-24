@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import com.example.evntly.R
+import com.example.evntly.ui.screens.event.EventDetails
 import com.example.evntly.ui.viewmodel.EventViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -108,6 +109,9 @@ fun MapScreen(
     val cameraPositionState = rememberCameraPositionState()
     var locationEnabled by remember { mutableStateOf(false) }
 
+    // state for the tapped event
+    var selectedEvent by remember { mutableStateOf<com.example.evntly.domain.model.Event?>(null) }
+
     val permissionLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
             locationEnabled = granted
@@ -155,13 +159,21 @@ fun MapScreen(
             events
                 .filter { it.latitude != null && it.longitude != null }
                 .forEach { event ->
+                    val latLng = LatLng(event.latitude!!, event.longitude!!)
                     Marker(
-                        state = MarkerState(
-                            position = LatLng(event.latitude!!, event.longitude!!)
-                        ),
-                        title = event.name,
-                        snippet = event.location,
-                        icon = markerIcon
+                        state = MarkerState(position = latLng),
+                        icon = markerIcon,
+                        onClick = {
+                            selectedEvent = event
+                            // Recenter map so the pin is visible above the upcoming sheet
+                            scope.launch {
+                                cameraPositionState.animate(
+                                    CameraUpdateFactory.newLatLngZoom(latLng, 16f)
+                                )
+                                cameraPositionState.animate(CameraUpdateFactory.scrollBy(0f, 300f))
+                            }
+                            true // consume the click so default info window doesn't show
+                        }
                     )
                 }
         }
@@ -176,6 +188,14 @@ fun MapScreen(
         ) {
             Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add_event))
         }
+    }
+
+    // Show the bottom sheet when an event is selected
+    selectedEvent?.let { ev ->
+        EventDetails(
+            event = ev,
+            onDismiss = { selectedEvent = null }
+        )
     }
 }
 
