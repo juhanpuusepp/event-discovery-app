@@ -21,6 +21,8 @@ import com.example.evntly.ui.viewmodel.EventViewModel
 import kotlinx.coroutines.launch
 import com.example.evntly.ui.components.AppTopBar
 import com.example.evntly.ui.components.AppDrawer
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 
 /**
  * Main navigation host for the application.
@@ -47,6 +49,8 @@ fun AppNavHost(
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val halfWidth = screenWidth / 2
 
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -76,6 +80,9 @@ fun AppNavHost(
                 AppTopBar(
                     title = "",
                     onMenuClick = {
+                        // hide keyboard/focus before opening drawer
+                        focusManager.clearFocus()
+                        keyboardController?.hide()
                         scope.launch {
                             if (drawerState.isClosed) drawerState.open() else drawerState.close()
                         }
