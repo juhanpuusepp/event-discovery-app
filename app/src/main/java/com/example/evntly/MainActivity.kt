@@ -15,8 +15,17 @@ import com.example.evntly.ui.theme.EvntlyTheme
 import com.example.evntly.ui.viewmodel.EventViewModel
 import com.example.evntly.ui.viewmodel.EventViewModelFactory
 import kotlin.getValue
+import com.example.evntly.ui.viewmodel.AuthViewModel
+import com.example.evntly.ui.viewmodel.AuthViewModelFactory
+
+
 
 class MainActivity : ComponentActivity() {
+
+    private val authViewModel: AuthViewModel by viewModels {
+        AuthViewModelFactory()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -37,10 +46,13 @@ class MainActivity : ComponentActivity() {
             // Create state to track dark mode
             val isDarkTheme = remember { mutableStateOf(false) }
 
-            EvntlyTheme(darkTheme = isDarkTheme.value,
-                dynamicColor = false) {
+            EvntlyTheme(
+                darkTheme = isDarkTheme.value,
+                dynamicColor = false
+            ) {
                 AppNavHost(
                     viewModel = viewModel,
+                    authViewModel = authViewModel,
                     isDarkTheme = isDarkTheme.value,
                     onToggleTheme = { isDarkTheme.value = !isDarkTheme.value }
                 )

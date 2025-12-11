@@ -23,6 +23,11 @@ import com.example.evntly.ui.components.AppTopBar
 import com.example.evntly.ui.components.AppDrawer
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import com.example.evntly.ui.viewmodel.AuthViewModel
+import androidx.compose.runtime.LaunchedEffect
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.evntly.ui.screens.profile.LoginScreen
+import com.example.evntly.ui.viewmodel.AuthUiState
 
 /**
  * Main navigation host for the application.
@@ -35,9 +40,27 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 fun AppNavHost(
     modifier: Modifier = Modifier,
     viewModel: EventViewModel,
+    authViewModel: AuthViewModel,
     isDarkTheme: Boolean,
     onToggleTheme: () -> Unit
 ) {
+    val authUiState: AuthUiState =
+        authViewModel.uiState.collectAsStateWithLifecycle().value
+
+    LaunchedEffect(Unit) {
+        authViewModel.loadCurrentUser()
+    }
+
+    if (!authUiState.isLoggedIn) {
+        LoginScreen(
+            viewModel = authViewModel,
+            onAuthenticated = {
+                authViewModel.loadCurrentUser()
+            }
+        )
+        return
+    }
+
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -113,7 +136,9 @@ fun AppNavHost(
                         )
                     }
                     composable(Destinations.PROFILE) {
-                        ProfileScreen()
+                        ProfileScreen(
+                            authViewModel = authViewModel
+                        )
                     }
                     composable(Destinations.ADD_EVENT) {
                         AddEventScreen(

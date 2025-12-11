@@ -1,71 +1,75 @@
 package com.example.evntly.ui.screens.profile
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
-import com.example.evntly.R
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.evntly.ui.viewmodel.AuthUiState
+import com.example.evntly.ui.viewmodel.AuthViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * Screen displaying the currently authenticated user's profile information
+ */
 @Composable
-fun ProfileScreen() {
-    Scaffold { innerPadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerPadding)
-                .padding(
-                    start = dimensionResource(R.dimen.spacing_md),
-                    end = dimensionResource(R.dimen.spacing_md),
-                    top = dimensionResource(R.dimen.spacing_xl)
-                )
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+fun ProfileScreen(
+    authViewModel: AuthViewModel
+) {
+    val authUiState: AuthUiState by authViewModel.uiState.collectAsStateWithLifecycle()
+    val user = authUiState.currentUser
 
-            // picture
-            Image(
-                painter = painterResource(id = R.drawable.orangewithbgandlogo),
-                contentDescription = stringResource(R.string.profile_picture),
-                modifier = Modifier
-                    .size(dimensionResource(R.dimen.spacing_xl) * 3)
-                    .clip(CircleShape)
-            )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp, vertical = 32.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+        Text(
+            text = "Profile",
+            style = MaterialTheme.typography.headlineMedium
+        )
 
-            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_md)))
+        Spacer(modifier = Modifier.height(24.dp))
 
-            // username
-            Text(text = stringResource(R.string.test_user), fontSize = 22.sp, fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_xs)))
-            // email
+        if (user == null) {
             Text(
-                text = stringResource(R.string.test_user_email),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                text = "No user is currently signed in.",
+                style = MaterialTheme.typography.bodyMedium
+            )
+        } else {
+            Text(
+                text = "Name: ${user.displayName}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Email: ${user.email}",
+                style = MaterialTheme.typography.bodyMedium
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Gender: ${user.gender}",
+                style = MaterialTheme.typography.bodyMedium
             )
 
-            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_lg)))
+            Spacer(modifier = Modifier.height(24.dp))
 
-            // edit and log out buttons
             Button(
-                onClick = { /* TODO: handle edit */ },
-                modifier = Modifier.fillMaxWidth(0.8f)
-            ) { Text(stringResource(R.string.edit_profile)) }
-
-            Spacer(modifier = Modifier.height(dimensionResource(R.dimen.spacing_sm)))
-
-            OutlinedButton(
-                onClick = { /* TODO: handle logout */ },
-                modifier = Modifier.fillMaxWidth(0.8f)
-            ) { Text(stringResource(R.string.log_out)) }
+                onClick = { authViewModel.signOut() }
+            ) {
+                Text(text = "Log out")
+            }
         }
     }
 }
