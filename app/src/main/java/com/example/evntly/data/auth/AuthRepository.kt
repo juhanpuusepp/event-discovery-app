@@ -100,7 +100,6 @@ class AuthRepository(
             firestore.collection("users")
                 .document(uid)
                 .set(profile)
-                .await()
 
             Result.success(profile)
         } catch (e: Exception) {

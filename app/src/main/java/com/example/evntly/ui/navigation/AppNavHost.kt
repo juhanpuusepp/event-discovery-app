@@ -24,17 +24,9 @@ import com.example.evntly.ui.components.AppDrawer
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import com.example.evntly.ui.viewmodel.AuthViewModel
-import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.evntly.ui.screens.profile.LoginScreen
-import com.example.evntly.ui.viewmodel.AuthUiState
 
-/**
- * Main navigation host for the application.
- * Builds a NavController.
- * Calls the TopBar with the menu icon.
- * Calls the drawer (sidebar) that handles navigation between Map, Events, Profile.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavHost(
@@ -42,28 +34,20 @@ fun AppNavHost(
     viewModel: EventViewModel,
     authViewModel: AuthViewModel,
     isDarkTheme: Boolean,
-    onToggleTheme: () -> Unit
+    onToggleTheme: () -> Unit,
+    onThemeChange: (Boolean) -> Unit
 ) {
-    val authUiState: AuthUiState =
-        authViewModel.uiState.collectAsStateWithLifecycle().value
-
-    LaunchedEffect(Unit) {
-        authViewModel.loadCurrentUser()
-    }
-
-    if (!authUiState.isLoggedIn) {
-        LoginScreen(
-            viewModel = authViewModel,
-            onAuthenticated = {
-                authViewModel.loadCurrentUser()
-            }
-        )
-        return
-    }
+    val authUiState = authViewModel.uiState.collectAsStateWithLifecycle().value
 
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    val startDestination = if (authUiState.isLoggedIn) {
+        Destinations.MAP
+    } else {
+        Destinations.LOGIN
+    }
 
     val currentRoute = navController.currentBackStackEntryFlow
         .collectAsState(initial = navController.currentBackStackEntry)
@@ -104,11 +88,11 @@ fun AppNavHost(
                 AppTopBar(
                     title = "",
                     onMenuClick = {
-                        // hide keyboard/focus before opening drawer
                         focusManager.clearFocus()
                         keyboardController?.hide()
                         scope.launch {
-                            if (drawerState.isClosed) drawerState.open() else drawerState.close()
+                            if (drawerState.isClosed) drawerState.open()
+                            else drawerState.close()
                         }
                     }
                 )
@@ -121,9 +105,19 @@ fun AppNavHost(
             ) {
                 NavHost(
                     navController = navController,
-                    startDestination = Destinations.MAP,
+                    startDestination = startDestination,
                     modifier = modifier
                 ) {
+                    composable(Destinations.LOGIN) {
+                        LoginScreen(
+                            viewModel = authViewModel,
+                            onAuthenticated = {
+                                navController.navigate(Destinations.MAP) {
+                                    popUpTo(Destinations.LOGIN) { inclusive = true }
+                                }
+                            }
+                        )
+                    }
                     composable(Destinations.MAP) {
                         MapScreen(
                             onAddEvent = { navController.navigate(Destinations.ADD_EVENT) },
@@ -132,18 +126,19 @@ fun AppNavHost(
                         )
                     }
                     composable(Destinations.EVENTS) {
-                        EventsScreen(
-                            viewModel = viewModel
-                        )
+                        EventsScreen(viewModel = viewModel)
                     }
                     composable(Destinations.PROFILE) {
                         ProfileScreen(
-                            authViewModel = authViewModel
+                            authViewModel = authViewModel,
+                            onThemeChange = onThemeChange
                         )
                     }
                     composable(Destinations.ADD_EVENT) {
                         AddEventScreen(
-                            onBack = { navController.popBackStack(Destinations.MAP, false) },
+                            onBack = {
+                                navController.popBackStack(Destinations.MAP, false)
+                            },
                             viewModel = viewModel
                         )
                     }

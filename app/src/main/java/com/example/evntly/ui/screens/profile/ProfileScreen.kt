@@ -22,7 +22,8 @@ import com.example.evntly.ui.viewmodel.AuthViewModel
  */
 @Composable
 fun ProfileScreen(
-    authViewModel: AuthViewModel
+    authViewModel: AuthViewModel,
+    onThemeChange: (Boolean) -> Unit
 ) {
     val authUiState: AuthUiState by authViewModel.uiState.collectAsStateWithLifecycle()
     val user = authUiState.currentUser
@@ -66,7 +67,8 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
-                onClick = { authViewModel.signOut() }
+                onClick = { onThemeChange(false)
+                    authViewModel.signOut() }
             ) {
                 Text(text = "Log out")
             }

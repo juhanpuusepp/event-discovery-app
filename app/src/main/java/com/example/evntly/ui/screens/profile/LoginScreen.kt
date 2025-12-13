@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.evntly.ui.viewmodel.AuthUiState
 import com.example.evntly.ui.viewmodel.AuthViewModel
 
 /**
@@ -33,14 +32,14 @@ import com.example.evntly.ui.viewmodel.AuthViewModel
  *
  * @param viewModel ViewModel responsible for handling authentication logic
  * @param onAuthenticated invoked when the user has successfully
- * authenticated and a non-null [AuthUiState.currentUser] is available
+ * authenticated and a non-null currentUser is available
  */
 @Composable
 fun LoginScreen(
     viewModel: AuthViewModel,
     onAuthenticated: () -> Unit
 ) {
-    val uiState: AuthUiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(uiState.currentUser) {
         if (uiState.currentUser != null) {

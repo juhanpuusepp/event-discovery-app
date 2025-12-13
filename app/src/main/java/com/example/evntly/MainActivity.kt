@@ -54,7 +54,8 @@ class MainActivity : ComponentActivity() {
                     viewModel = viewModel,
                     authViewModel = authViewModel,
                     isDarkTheme = isDarkTheme.value,
-                    onToggleTheme = { isDarkTheme.value = !isDarkTheme.value }
+                    onToggleTheme = { isDarkTheme.value = !isDarkTheme.value },
+                    onThemeChange = { isDarkTheme.value = it }
                 )
             }
         }

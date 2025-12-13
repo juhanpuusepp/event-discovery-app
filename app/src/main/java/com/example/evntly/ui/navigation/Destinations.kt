@@ -8,4 +8,5 @@ object Destinations {
     const val EVENTS = "events"
     const val ADD_EVENT = "add_event"
     const val PROFILE = "profile"
+    const val LOGIN = "login"
 }
