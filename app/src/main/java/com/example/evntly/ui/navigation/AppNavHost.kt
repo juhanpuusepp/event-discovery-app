@@ -93,7 +93,8 @@ fun AppNavHost(
                     }
                 },
                 onToggleDarkMode = onToggleTheme,
-                isDarkMode = isDarkTheme
+                isDarkMode = isDarkTheme,
+                authViewModel = authViewModel
             )
         }
     ) {

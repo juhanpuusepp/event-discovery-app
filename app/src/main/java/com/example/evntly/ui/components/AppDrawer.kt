@@ -11,6 +11,7 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -18,8 +19,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.evntly.R
 import com.example.evntly.ui.navigation.Destinations
+import com.example.evntly.ui.viewmodel.AuthUiState
+import com.example.evntly.ui.viewmodel.AuthViewModel
 
 /**
  * drawer with a profile header
@@ -31,8 +35,12 @@ fun AppDrawer(
     currentRoute: String?,
     onNavigate: (String) -> Unit,
     onToggleDarkMode: () -> Unit,
-    isDarkMode: Boolean
+    isDarkMode: Boolean,
+    authViewModel: AuthViewModel
 ) {
+    val authUiState: AuthUiState by authViewModel.uiState.collectAsStateWithLifecycle()
+    val user = authUiState.currentUser
+
     Box(modifier = Modifier.width(drawerWidth)) {
         ModalDrawerSheet(
             drawerContainerColor = MaterialTheme.colorScheme.surface
@@ -56,10 +64,12 @@ fun AppDrawer(
                 Spacer(modifier = Modifier.width(12.dp))
 
                 Column {
-                    Text(
-                        text = "Test User",
-                        style = MaterialTheme.typography.titleMedium
-                    )
+                    if (user != null) {
+                        Text(
+                            text = user.displayName,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
                     Text(
                         text = "View profile",
                         style = MaterialTheme.typography.bodySmall,
