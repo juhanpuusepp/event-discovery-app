@@ -55,3 +55,6 @@ Navigating the App:
 * Tap the "+" icon to add a new event
 * Use navigation icon on the top left to open menu drawer to access Profile view, Events list view and enable/disable dark/light mode.
 * Log out from Profile view
+
+## Demo Video
+https://drive.google.com/file/d/19R4A8oDgf4tkTZWXyvjHsig7sYsjohqW/view 
