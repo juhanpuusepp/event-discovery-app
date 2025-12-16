@@ -35,3 +35,25 @@ Darkmode map style: Dark by Roy (https://snazzymaps.com/style/71079/dark)
 
 ## Planned Tools, frameworks, libraries, APIs
 Dagger
+
+
+## User Guide
+
+Installing the App:
+* Download the APK file from the repository (/apk folder) to your Android phone.
+* Open the downloaded APK file.
+* If prompted, allow installation from unknown sources.
+* Complete the installation.
+
+Launching the App:
+* After installation, open the app.
+* Make sure location services are enabled and the internet service is provided.
+
+Navigating the App:
+* First create an account if you do not have one already.
+* The app opens on the main screen, where events are displayed on a map.
+* Use the map to explore nearby events.
+* Tap on an event marker to view event details.
+* Tap the "+" icon to add a new event
+* Use navigation icon on the top left to open menu drawer to access Profile view, Events list view and enable/disable dark/light mode.
+* Log out from Profile view
