@@ -2,6 +2,7 @@
 .gradle/
 build/
 */build/
+!/apk/
 
 # Local configuration
 local.properties
