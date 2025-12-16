@@ -2,7 +2,6 @@
 .gradle/
 build/
 */build/
-!/apk/
 
 # Local configuration
 local.properties
@@ -35,6 +34,11 @@ output.json
 *.apk
 *.ap_
 *.aab
+
+# Allow APKs in root apk folder
+!/apk/
+!/apk/*.apk
+
 
 # Keystore files (DO NOT COMMIT)
 *.jks
