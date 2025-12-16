@@ -1,5 +1,5 @@
 # EVNTLY – Event Discovery App
-Discover events around you through a map-based interface and as an organiser, add your own. The user can view nearby events filtered by categories. By clicking on an event, more details are presented. In addition, a calendar view also allows browsing upcoming events by date. The platform supports micro-payments for paid events, enabling users to purchase tickets directly within the app. Certified accounts can add their own occasions.
+Discover events around you through a map-based interface, and as an organiser, add your own. The user can view nearby events filtered by categories. By clicking on an event, users can obtain more information about it. Additionally, a calendar view allows browsing upcoming events by date. The platform supports micro-payments for paid events, enabling users to purchase tickets directly within the app. Certified accounts can add their own events.
 
 The app is written in **Kotlin language**, in **Android Studio** IDE. It is compiled and run by **Gradle**, with the UI being created by using the modern toolkit **Jetpack Compose**.
 
